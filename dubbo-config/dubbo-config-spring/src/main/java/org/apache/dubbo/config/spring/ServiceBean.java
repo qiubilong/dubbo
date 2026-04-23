@@ -34,20 +34,20 @@ import org.springframework.context.ApplicationEventPublisherAware;
 
 /**
  * ServiceFactoryBean
- *
+ *  父类 AbstractConfig -->  @PostConstruct -->  addIntoConfigManager -->   ApplicationModel.getConfigManager().addConfig(this);/* 添加暴露服务到ConfigManager，DubboBootstrap集中管理
  * @export
  */
 public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean, DisposableBean,
         ApplicationContextAware, BeanNameAware, ApplicationEventPublisherAware {
-
-
+    /* 父类 AbstractConfig -->  @PostConstruct -->  addIntoConfigManager -->   ApplicationModel.getConfigManager().addConfig(this);/* 添加暴露服务到ConfigManager，DubboBootstrap集中管理
+    /* protected T ref;   对应服务实现类 Bean引用 */
     private static final long serialVersionUID = 213195494150089726L;
 
     private final transient Service service;
 
     private transient ApplicationContext applicationContext;
 
-    private transient String beanName;
+    private transient String beanName;/* 实例名字 = ServiceBean:org.apache.dubbo.demo.DemoService:1.0.1:tulings */
 
     private ApplicationEventPublisher applicationEventPublisher;
 
@@ -62,9 +62,9 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(ApplicationContext applicationContext) {/* Bean Aware回调 */
         this.applicationContext = applicationContext;
-        SpringExtensionFactory.addApplicationContext(applicationContext);
+        SpringExtensionFactory.addApplicationContext(applicationContext);/* 注册关闭钩子 -  ShutdownHookListener */
     }
 
     @Override

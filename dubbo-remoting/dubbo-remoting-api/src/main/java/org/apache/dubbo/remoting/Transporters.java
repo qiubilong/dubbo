@@ -53,7 +53,7 @@ public class Transporters {
         } else {
             handler = new ChannelHandlerDispatcher(handlers);
         }
-        return getTransporter().bind(url, handler);
+        return getTransporter().bind(url, handler); /* 调用NettyTransporter去绑定，Transporter表示网络传输层 */
     }
 
     public static Client connect(String url, ChannelHandler... handler) throws RemotingException {

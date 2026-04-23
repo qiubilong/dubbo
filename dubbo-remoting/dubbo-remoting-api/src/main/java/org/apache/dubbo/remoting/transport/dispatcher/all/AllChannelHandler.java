@@ -28,11 +28,11 @@ import org.apache.dubbo.remoting.transport.dispatcher.WrappedChannelHandler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
-
+/* SPI - ChannelHandler 包装类 - 处理响应异步线程池 */
 public class AllChannelHandler extends WrappedChannelHandler {
 
     public AllChannelHandler(ChannelHandler handler, URL url) {
-        super(handler, url);
+        super(handler, url);/* 创建业务线程池 -  服务端 FixedThreadPool（core=200），   客户端默认- CachedThreadPool  */
     }
 
     @Override
@@ -54,12 +54,12 @@ public class AllChannelHandler extends WrappedChannelHandler {
             throw new ExecutionException("disconnect event", channel, getClass() + " error when process disconnected event .", t);
         }
     }
-
+    /* 服务端、客户端收到报文 -- 线程池异步处理 */
     @Override
     public void received(Channel channel, Object message) throws RemotingException {
         ExecutorService executor = getPreferredExecutorService(message);
         try {
-            executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message));
+            executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message)); /* 异步化，交给线程池去处理message */
         } catch (Throwable t) {
         	if(message instanceof Request && t instanceof RejectedExecutionException){
                 sendFeedback(channel, (Request) message, t);

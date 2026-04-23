@@ -46,7 +46,7 @@ import static org.apache.dubbo.common.utils.ReflectUtils.defaultReturn;
  * {@link #getValue()} and {@link #getException()} are all inherited from {@link Result} interface, implementing them are mainly
  * for compatibility consideration. Because many legacy {@link Filter} implementation are most possibly to call getValue directly.
  */
-public class AsyncRpcResult implements Result {
+public class AsyncRpcResult implements Result { /* rpc结果 - 保存 AppResponse */
     private static final Logger logger = LoggerFactory.getLogger(AsyncRpcResult.class);
 
     /**
@@ -57,7 +57,7 @@ public class AsyncRpcResult implements Result {
     private RpcContext storedServerContext;
     private Executor executor;
 
-    private Invocation invocation;
+    private Invocation invocation;/* 调用参数封装 */
 
     private CompletableFuture<AppResponse> responseFuture;
 
@@ -188,7 +188,7 @@ public class AsyncRpcResult implements Result {
             return RpcContext.getContext().getFuture();
         }
 
-        return getAppResponse().recreate();
+        return getAppResponse().recreate();/* 返回业务结果 or 抛出异常 */
     }
 
     public Result whenCompleteWithContext(BiConsumer<Result, Throwable> fn) {

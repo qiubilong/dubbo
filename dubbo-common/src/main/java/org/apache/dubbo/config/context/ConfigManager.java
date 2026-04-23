@@ -60,7 +60,7 @@ import static org.apache.dubbo.common.utils.StringUtils.isNotEmpty;
 import static org.apache.dubbo.config.AbstractConfig.getTagName;
 import static org.apache.dubbo.config.Constants.PROTOCOLS_SUFFIX;
 import static org.apache.dubbo.config.Constants.REGISTRIES_SUFFIX;
-
+/* 统一配置管理中心 */
 public class ConfigManager extends LifecycleAdapter implements FrameworkExt {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
@@ -384,7 +384,7 @@ public class ConfigManager extends LifecycleAdapter implements FrameworkExt {
         if (config == null) {
             return;
         }
-        write(() -> {
+        write(() -> {                                /* 先获取【 配置类型标签】 service */
             Map<String, AbstractConfig> configsMap = configsCache.computeIfAbsent(getTagName(config.getClass()), type -> newMap());
             addIfAbsent(config, configsMap, unique);
         });
@@ -480,7 +480,7 @@ public class ConfigManager extends LifecycleAdapter implements FrameworkExt {
                 checkDuplicate(c, config);
             });
         }
-
+        /* todo 确认 -- 生成唯一标识  例 ServiceBean:org.apache.dubbo.demo.DemoService:1.0.1 */
         String key = getId(config);
 
         C existedConfig = configsMap.get(key);
@@ -492,7 +492,7 @@ public class ConfigManager extends LifecycleAdapter implements FrameworkExt {
                         "you can try to give each %s a different id : %s", type, type, type, type, config));
             }
         } else {
-            configsMap.put(key, config);
+            configsMap.put(key, config);/* 添加 service等配置类 */
         }
     }
 

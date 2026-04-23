@@ -95,7 +95,7 @@ public abstract class AbstractConfig implements Serializable {
         }
         return value;
     }
-
+   /* 管理类标签 - service、reference、application、protocol  */
     public static String getTagName(Class<?> cls) {
         String tag = cls.getSimpleName();
         for (String suffix : SUFFIXES) {
@@ -576,7 +576,7 @@ public abstract class AbstractConfig implements Serializable {
      */
     @PostConstruct
     public void addIntoConfigManager() {
-        ApplicationModel.getConfigManager().addConfig(this);
+        ApplicationModel.getConfigManager().addConfig(this);/* 添加暴露服务到ConfigManager，DubboBootstrap集中管理 */
     }
 
     @Override

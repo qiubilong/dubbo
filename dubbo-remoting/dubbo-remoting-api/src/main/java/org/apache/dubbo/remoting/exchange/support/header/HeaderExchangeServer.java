@@ -50,7 +50,7 @@ import static org.apache.dubbo.remoting.utils.UrlUtils.getIdleTimeout;
 /**
  * ExchangeServerImpl
  */
-public class HeaderExchangeServer implements ExchangeServer {
+public class HeaderExchangeServer implements ExchangeServer { /* 网络server抽象层 */
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 

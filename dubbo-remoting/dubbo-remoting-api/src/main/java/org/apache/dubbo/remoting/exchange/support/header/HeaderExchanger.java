@@ -38,10 +38,10 @@ public class HeaderExchanger implements Exchanger {
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
-
+    // 为什么在connect和bind时都是DecodeHandler，解码，解的是把InputStream解析成RpcInvocation对象
     @Override
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
-        return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
+        return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));/* 构建netty服务端端，handler = DubboProtocol.requestHandler */
     }
 
 }

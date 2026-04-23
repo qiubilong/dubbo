@@ -97,7 +97,7 @@ import static org.apache.dubbo.common.utils.StringUtils.isNotEmpty;
 import static org.apache.dubbo.metadata.WritableMetadataService.getExtension;
 import static org.apache.dubbo.registry.client.metadata.ServiceInstanceMetadataUtils.setMetadataStorageType;
 import static org.apache.dubbo.remoting.Constants.CLIENT_KEY;
-
+/* dubbo核心启动类 -  初始化（initialize） → 启动（start） → 运行（ready） → 停止（stop/destroy） */
 /**
  * See {@link ApplicationModel} and {@link ExtensionLoader} for why this class is designed to be singleton.
  *
@@ -181,7 +181,7 @@ public class DubboBootstrap extends GenericEventListener {
         }
         return instance;
     }
-
+    /* 初始化 - dubbo核心管理启动类  */
     private DubboBootstrap() {
         configManager = ApplicationModel.getConfigManager();
         environment = ApplicationModel.getEnvironment();
@@ -738,7 +738,7 @@ public class DubboBootstrap extends GenericEventListener {
     /**
      * Start the bootstrap
      */
-    public DubboBootstrap start() {
+    public DubboBootstrap start() { /* Spring容器启动完成 */
         if (started.compareAndSet(false, true)) {
             ready.set(false);
             initialize();
@@ -746,7 +746,7 @@ public class DubboBootstrap extends GenericEventListener {
                 logger.info(NAME + " is starting...");
             }
             // 1. export Dubbo Services
-            exportServices();
+            exportServices(); /* 暴露 @DubboService服务 */
 
             // Not only provider register
             if (!isOnlyRegisterProvider() || hasExportedServices()) {
@@ -940,7 +940,7 @@ public class DubboBootstrap extends GenericEventListener {
                 });
                 asyncExportingFutures.add(future);
             } else {
-                sc.export();
+                sc.export();/* 暴露 @DubboService服务 */
                 exportedServices.add(sc);
             }
         });

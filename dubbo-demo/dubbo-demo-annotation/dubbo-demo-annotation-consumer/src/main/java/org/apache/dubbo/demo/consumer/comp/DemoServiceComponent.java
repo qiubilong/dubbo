@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Component("demoServiceComponent")
 public class DemoServiceComponent implements DemoService {
-    @Reference
+    @Reference(version = "1.0.1", group = "test-xx", mock = "fail: return 123",timeout = 1000 * 60,retries = 0) //内部rpc异常
     private DemoService demoService;
 
     @Override

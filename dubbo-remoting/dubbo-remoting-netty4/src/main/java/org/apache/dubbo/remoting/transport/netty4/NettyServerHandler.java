@@ -47,7 +47,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
 
     private final URL url;
 
-    private final ChannelHandler handler;
+    private final ChannelHandler handler;/* 异步线程池 - AllChannelHandler */
 
     public NettyServerHandler(URL url, ChannelHandler handler) {
         if (url == null) {
@@ -91,11 +91,11 @@ public class NettyServerHandler extends ChannelDuplexHandler {
             logger.info("The connection of " + channel.getRemoteAddress() + " -> " + channel.getLocalAddress() + " is disconnected.");
         }
     }
-
+    /* 服务端 -收到请求 */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
-        handler.received(channel, msg);
+        handler.received(channel, msg); /* 异步线程池处理器 - AllChannelHandler.received */
     }
 
 

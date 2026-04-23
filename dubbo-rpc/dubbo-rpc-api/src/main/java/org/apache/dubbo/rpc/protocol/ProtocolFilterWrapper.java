@@ -38,11 +38,11 @@ import static org.apache.dubbo.common.constants.CommonConstants.SERVICE_FILTER_K
 /**
  * ListenerProtocol
  */
-public class ProtocolFilterWrapper implements Protocol {
+public class ProtocolFilterWrapper implements Protocol { /* 支持服务调用过滤器 */
 
-    private final Protocol protocol;
+    private final Protocol protocol;/* 底层 - RegistryProtocol 或者 DubboProtocol */
 
-    public ProtocolFilterWrapper(Protocol protocol) {
+    public ProtocolFilterWrapper(Protocol protocol) {/* 根据构造函数自动包装 */
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
         }
@@ -52,7 +52,7 @@ public class ProtocolFilterWrapper implements Protocol {
     private static <T> Invoker<T> buildInvokerChain(final Invoker<T> invoker, String key, String group) {
         Invoker<T> last = invoker;
         List<Filter> filters = ExtensionLoader.getExtensionLoader(Filter.class).getActivateExtension(invoker.getUrl(), key, group);
-
+        /* 重要Invoker过滤器 - TimeoutFilter、ExceptionFilter */
         if (!filters.isEmpty()) {
             for (int i = filters.size() - 1; i >= 0; i--) {
                 final Filter filter = filters.get(i);
@@ -77,7 +77,7 @@ public class ProtocolFilterWrapper implements Protocol {
                     @Override
                     public Result invoke(Invocation invocation) throws RpcException {
                         Result asyncResult;
-                        try {
+                        try {  /* 最后一个过滤器 ExceptionFilter  --> JavassistInvoker --> 服务实现对象 */
                             asyncResult = filter.invoke(next, invocation);
                         } catch (Exception e) {
                             if (filter instanceof ListenableFilter) {
@@ -148,8 +148,8 @@ public class ProtocolFilterWrapper implements Protocol {
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         if (UrlUtils.isRegistry(invoker.getUrl())) {
-            return protocol.export(invoker);
-        }
+            return protocol.export(invoker);/* 1、第一次执行，protocol=registry -- > RegistryProtocol - 暴露服务并注册zookeeper */
+        } /*  2、第二次执行，protocol=dubbo --> 生成服务端-支持回调invoker - CallbackRegistrationInvoker ->  构造 服务invoker过滤器链 -> ExceptionFilter、TimeoutFilter */
         return protocol.export(buildInvokerChain(invoker, SERVICE_FILTER_KEY, CommonConstants.PROVIDER));
     }
 

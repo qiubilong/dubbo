@@ -30,7 +30,7 @@ import org.springframework.core.Ordered;
  *
  * @since 2.7.5
  */
-public class DubboBootstrapApplicationListener extends OneTimeExecutionApplicationContextEventListener
+public class DubboBootstrapApplicationListener extends OneTimeExecutionApplicationContextEventListener /* spring启动事件监听器 */
         implements Ordered {
 
     /**
@@ -43,7 +43,7 @@ public class DubboBootstrapApplicationListener extends OneTimeExecutionApplicati
     private final DubboBootstrap dubboBootstrap;
 
     public DubboBootstrapApplicationListener() {
-        this.dubboBootstrap = DubboBootstrap.getInstance();
+        this.dubboBootstrap = DubboBootstrap.getInstance();/* 实例化 DubboBootstrap  */
     }
 
     @Override
@@ -56,7 +56,7 @@ public class DubboBootstrapApplicationListener extends OneTimeExecutionApplicati
     }
 
     private void onContextRefreshedEvent(ContextRefreshedEvent event) {
-        dubboBootstrap.start();
+        dubboBootstrap.start();/* spring容器启动完成，暴露 @DubboService 服务  */
     }
 
     private void onContextClosedEvent(ContextClosedEvent event) {

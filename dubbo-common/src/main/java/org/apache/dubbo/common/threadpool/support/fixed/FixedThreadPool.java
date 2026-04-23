@@ -40,7 +40,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.THREAD_NAME_KEY;
  * @see java.util.concurrent.Executors#newFixedThreadPool(int)
  */
 public class FixedThreadPool implements ThreadPool {
-
+    /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端默认 CachedThreadPool */
     @Override
     public Executor getExecutor(URL url) {
         String name = url.getParameter(THREAD_NAME_KEY, DEFAULT_THREAD_NAME);

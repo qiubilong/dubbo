@@ -20,18 +20,33 @@ import org.apache.dubbo.config.annotation.Service;
 import org.apache.dubbo.demo.DemoService;
 import org.apache.dubbo.rpc.RpcContext;
 
+import org.apache.dubbo.rpc.RpcException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-@Service
+@Service(version = "1.0.1", group = "test-xx",parameters = {"scope","remote"})
 public class DemoServiceImpl implements DemoService {
     private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
 
     @Override
     public String sayHello(String name) {
         logger.info("Hello " + name + ", request from consumer: " + RpcContext.getContext().getRemoteAddress());
+
+        if(Objects.equals(name,"Rpc")){
+            throw new RpcException();/* 模拟框架异常，触发mock降级 - 不会重试 */
+        }
+
+        if(Objects.equals(name,"Null")){
+            throw new NullPointerException();/* 业务异常 - 不会重试 */
+        }
+
+        if(Objects.equals(name,"User")){
+            throw new UserException();/* 业务异常 - 不会重试 */
+        }
+
         return "Hello " + name + ", response from provider: " + RpcContext.getContext().getLocalAddress();
     }
 

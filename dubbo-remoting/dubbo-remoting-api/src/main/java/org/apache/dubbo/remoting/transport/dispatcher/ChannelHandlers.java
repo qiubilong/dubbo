@@ -41,9 +41,9 @@ public class ChannelHandlers {
     static void setTestingChannelHandlers(ChannelHandlers instance) {
         INSTANCE = instance;
     }
-
+    /* 所以当Netty接收到一个数据时，会经历MultiMessageHandler--->HeartbeatHandler---->AllChannelHandler， 而AllChannelHandler会调用handler */
     protected ChannelHandler wrapInternal(ChannelHandler handler, URL url) {
-        return new MultiMessageHandler(new HeartbeatHandler(ExtensionLoader.getExtensionLoader(Dispatcher.class)
+        return new MultiMessageHandler(new HeartbeatHandler(ExtensionLoader.getExtensionLoader(Dispatcher.class)/* 业务异步线程池 - AllDispatcher.AllChannelHandler */
                 .getAdaptiveExtension().dispatch(handler, url)));
     }
 }

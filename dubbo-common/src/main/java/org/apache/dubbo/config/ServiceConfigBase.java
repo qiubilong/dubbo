@@ -56,7 +56,7 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
     /**
      * The reference of the interface implementation
      */
-    protected T ref;
+    protected T ref; /* 对应服务实现类 Bean引用 */
 
     /**
      * The service name
@@ -235,7 +235,7 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
                     protocolConfigs = new ArrayList<>(1);
                     ProtocolConfig protocolConfig = new ProtocolConfig();
                     protocolConfig.setDefault(true);
-                    protocolConfig.refresh();
+                    protocolConfig.refresh();/* 默认 dubbo */
                     protocolConfigs.add(protocolConfig);
                     ApplicationModel.getConfigManager().addProtocol(protocolConfig);
                 }

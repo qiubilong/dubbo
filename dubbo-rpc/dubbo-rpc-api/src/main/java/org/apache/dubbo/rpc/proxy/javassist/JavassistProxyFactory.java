@@ -31,20 +31,20 @@ public class JavassistProxyFactory extends AbstractProxyFactory {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
+    public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {/* 客户端 - Proxy代理 */
         return (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
     }
 
     @Override
-    public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
+    public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {/* 服务端 - Invoker代理 */
         // TODO Wrapper cannot handle this scenario correctly: the classname contains '$'
         final Wrapper wrapper = Wrapper.getWrapper(proxy.getClass().getName().indexOf('$') < 0 ? proxy.getClass() : type);
-        return new AbstractProxyInvoker<T>(proxy, type, url) {
+        return new AbstractProxyInvoker<T>(proxy, type, url) { /* 服务实现类Invoker - proxy=服务实现对象 */
             @Override
             protected Object doInvoke(T proxy, String methodName,
                                       Class<?>[] parameterTypes,
                                       Object[] arguments) throws Throwable {
-                return wrapper.invokeMethod(proxy, methodName, parameterTypes, arguments);
+                return wrapper.invokeMethod(proxy, methodName, parameterTypes, arguments);/* 如果没有wrapper，则要通过原生的反射技术去获取Method对象，然后执行。  生成代码见 dubbo-proxy-classes */
             }
         };
     }

@@ -41,7 +41,7 @@ public class ServiceAnnotationBeanPostProcessor extends ServiceClassPostProcesso
     public ServiceAnnotationBeanPostProcessor(Collection<String> packagesToScan) {
         this(new LinkedHashSet<>(packagesToScan));
     }
-
+    /* Bean工厂处理器 - BeanFactoryPostProcessor 查找 @Service */
     public ServiceAnnotationBeanPostProcessor(Set<String> packagesToScan) {
         super(packagesToScan);
     }

@@ -90,8 +90,8 @@ import static org.apache.dubbo.rpc.protocol.dubbo.Constants.SHARE_CONNECTIONS_KE
 /**
  * dubbo protocol support.
  */
-public class DubboProtocol extends AbstractProtocol {
-
+public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是包装类 */
+    /* 父类   protected final Map<String, ProtocolServer> serverMap = new ConcurrentHashMap<>();/* 服务key -- 服务invoker */
     public static final String NAME = "dubbo";
 
     public static final int DEFAULT_PORT = 20880;
@@ -104,10 +104,10 @@ public class DubboProtocol extends AbstractProtocol {
     private final Map<String, List<ReferenceCountExchangeClient>> referenceClientMap = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, Object> locks = new ConcurrentHashMap<>();
     private final Set<String> optimizers = new ConcurrentHashSet<>();
-
+    /* dubbo请求处理器  -- 我猜作用是为了适配底层不同io框架，比如netty、mina、rest */
     private ExchangeHandler requestHandler = new ExchangeHandlerAdapter() {
 
-        @Override
+        @Override /* HeaderExchangeHandler调用 */
         public CompletableFuture<Object> reply(ExchangeChannel channel, Object message) throws RemotingException {
 
             if (!(message instanceof Invocation)) {
@@ -117,7 +117,7 @@ public class DubboProtocol extends AbstractProtocol {
             }
 
             Invocation inv = (Invocation) message;
-            Invoker<?> invoker = getInvoker(channel, inv);
+            Invoker<?> invoker = getInvoker(channel, inv);/* 1、 根据serviceKey找到 服务Invoker - CallbackRegistrationInvoker -- 执行过滤器链 -- AbstractProxyInvoker -- 服务实现者 */
             // need to consider backward-compatibility if it's a callback
             if (Boolean.TRUE.toString().equals(inv.getObjectAttachments().get(IS_CALLBACK_SERVICE_INVOKE))) {
                 String methodsStr = invoker.getUrl().getParameters().get("methods");
@@ -142,8 +142,8 @@ public class DubboProtocol extends AbstractProtocol {
                 }
             }
             RpcContext.getContext().setRemoteAddress(channel.getRemoteAddress());
-            Result result = invoker.invoke(inv);
-            return result.thenApply(Function.identity());
+            Result result = invoker.invoke(inv);/* 2、执行服务，得到结果 AsyncRpcResult */  /* CallbackRegistrationInvoker -- 执行过滤器链 -- AbstractProxyInvoker -- 服务实现者 */
+            return result.thenApply(Function.identity());/* AsyncRpcResult 转 AppResponse */
         }
 
         @Override
@@ -277,14 +277,14 @@ public class DubboProtocol extends AbstractProtocol {
         return DEFAULT_PORT;
     }
 
-    @Override
+    @Override /* 暴露服务 - invoker = CallbackRegistrationInvoker */
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         URL url = invoker.getUrl();
 
         // export service.
-        String key = serviceKey(url);
+        String key = serviceKey(url); /* ProtocolUtils.serviceKey(port, path, version, group) */
         DubboExporter<T> exporter = new DubboExporter<T>(invoker, key, exporterMap);
-        exporterMap.put(key, exporter);
+        exporterMap.put(key, exporter);/*   服务唯一key <-> 服务invoker映射 -->用于查找        ----------  CallbackRegistrationInvoker - JavassistInvoker - 服务实现类 */
 
         //export an stub service for dispatching event
         Boolean isStubSupportEvent = url.getParameter(STUB_EVENT_KEY, DEFAULT_STUB_EVENT);
@@ -299,7 +299,7 @@ public class DubboProtocol extends AbstractProtocol {
 
             }
         }
-
+        /* 开启NettyServer */
         openServer(url);
         optimizeSerialization(url);
 
@@ -308,7 +308,7 @@ public class DubboProtocol extends AbstractProtocol {
 
     private void openServer(URL url) {
         // find server.
-        String key = url.getAddress();
+        String key = url.getAddress();/* 获得ip地址和port， 192.168.40.17:20880 */
         //client can export a service which's only for server to invoke
         boolean isServer = url.getParameter(IS_SERVER_KEY, true);
         if (isServer) {
@@ -317,7 +317,7 @@ public class DubboProtocol extends AbstractProtocol {
                 synchronized (this) {
                     server = serverMap.get(key);
                     if (server == null) {
-                        serverMap.put(key, createServer(url));
+                        serverMap.put(key, createServer(url));/* 每个服务地址 - 创建netty */
                     }
                 }
             } else {
@@ -333,17 +333,17 @@ public class DubboProtocol extends AbstractProtocol {
                 .addParameterIfAbsent(CHANNEL_READONLYEVENT_SENT_KEY, Boolean.TRUE.toString())
                 // enable heartbeat by default
                 .addParameterIfAbsent(HEARTBEAT_KEY, String.valueOf(DEFAULT_HEARTBEAT))
-                .addParameter(CODEC_KEY, DubboCodec.NAME)
+                .addParameter(CODEC_KEY, DubboCodec.NAME)/* 指定编解码 - DubboCodec */
                 .build();
-        String str = url.getParameter(SERVER_KEY, DEFAULT_REMOTING_SERVER);
+        String str = url.getParameter(SERVER_KEY, DEFAULT_REMOTING_SERVER);/* 默认 netty*/
 
         if (str != null && str.length() > 0 && !ExtensionLoader.getExtensionLoader(Transporter.class).hasExtension(str)) {
             throw new RpcException("Unsupported server type: " + str + ", url: " + url);
         }
 
         ExchangeServer server;
-        try {
-            server = Exchangers.bind(url, requestHandler);
+        try {          /* 启动netty  */
+            server = Exchangers.bind(url, requestHandler); /* requestHandler是请求处理器， 我猜是为了适配底层不同io网络框架 */
         } catch (RemotingException e) {
             throw new RpcException("Fail to start server(url: " + url + ") " + e.getMessage(), e);
         }

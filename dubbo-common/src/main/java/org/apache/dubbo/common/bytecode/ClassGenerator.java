@@ -337,6 +337,7 @@ public final class ClassGenerator {
                     }
                 }
             }
+            mCtc.debugWriteFile(System.getProperty("user.dir")+"/dubbo-proxy-classes");//生成dubbo动态代理代码
             return mCtc.toClass(loader, pd);
         } catch (RuntimeException e) {
             throw e;

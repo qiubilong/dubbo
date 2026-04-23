@@ -54,7 +54,7 @@ public class ChannelEventRunnable implements Runnable {
     public void run() {
         if (state == ChannelState.RECEIVED) {
             try {
-                handler.received(channel, message);
+                handler.received(channel, message);/* 请求传输层 - DecodeHandler.received - 解出 - 请求封装类 RpcInvocation */
             } catch (Exception e) {
                 logger.warn("ChannelEventRunnable handle " + state + " operation error, channel is " + channel
                         + ", message is " + message, e);

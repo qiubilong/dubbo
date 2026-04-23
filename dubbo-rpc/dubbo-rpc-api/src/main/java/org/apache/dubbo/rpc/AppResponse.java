@@ -45,13 +45,13 @@ import java.util.function.Function;
  *
  * @serial Do not change the class name and properties.
  */
-public class AppResponse implements Result {
+public class AppResponse implements Result { /* 业务  - 请求响应 */
 
     private static final long serialVersionUID = -6925924956850004727L;
 
-    private Object result;
+    private Object result; /* 正常返回结果 */
 
-    private Throwable exception;
+    private Throwable exception; /* 服务返回异常 */
 
     private Map<String, Object> attachments = new HashMap<>();
 
@@ -86,7 +86,7 @@ public class AppResponse implements Result {
             } catch (Exception e) {
                 // ignore
             }
-            throw exception;
+            throw exception; /* 重新抛出服务异常 */
         }
         return result;
     }

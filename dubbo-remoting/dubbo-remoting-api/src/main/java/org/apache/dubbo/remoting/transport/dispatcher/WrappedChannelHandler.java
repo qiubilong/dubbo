@@ -133,7 +133,7 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
     public ExecutorService getSharedExecutorService() {
         ExecutorRepository executorRepository =
                 ExtensionLoader.getExtensionLoader(ExecutorRepository.class).getDefaultExtension();
-        ExecutorService executor = executorRepository.getExecutor(url);
+        ExecutorService executor = executorRepository.getExecutor(url); /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端默认 CachedThreadPool */
         if (executor == null) {
             executor = executorRepository.createExecutorIfAbsent(url);
         }

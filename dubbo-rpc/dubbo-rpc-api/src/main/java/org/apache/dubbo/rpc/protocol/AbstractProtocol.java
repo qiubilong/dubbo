@@ -51,7 +51,7 @@ public abstract class AbstractProtocol implements Protocol {
     /**
      * <host:port, ProtocolServer>
      */
-    protected final Map<String, ProtocolServer> serverMap = new ConcurrentHashMap<>();
+    protected final Map<String, ProtocolServer> serverMap = new ConcurrentHashMap<>();/* 服务key -- 服务invoker */
 
     //TODO SoftReference
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();

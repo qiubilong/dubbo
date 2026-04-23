@@ -38,9 +38,9 @@ import java.util.concurrent.CompletionException;
 public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     Logger logger = LoggerFactory.getLogger(AbstractProxyInvoker.class);
 
-    private final T proxy;
+    private final T proxy;/* 服务实现类 - DemoServiceImpl */
 
-    private final Class<T> type;
+    private final Class<T> type;/* 接口类 -  org.apache.dubbo.demo.DemoService  */
 
     private final URL url;
 
@@ -77,12 +77,12 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     @Override
     public void destroy() {
     }
-
+    /* 底层 - 服务端执行 -入口 -------------------------------------------------------------- */
     @Override
     public Result invoke(Invocation invocation) throws RpcException {
         try {
-            Object value = doInvoke(proxy, invocation.getMethodName(), invocation.getParameterTypes(), invocation.getArguments());
-			CompletableFuture<Object> future = wrapWithFuture(value);
+            Object value = doInvoke(proxy, invocation.getMethodName(), invocation.getParameterTypes(), invocation.getArguments()); /* 1、执行服务方法 - JavassistProxyFactory */
+			CompletableFuture<Object> future = wrapWithFuture(value); /* 2、封装 CompletableFuture异步 RPC结果  */
             CompletableFuture<AppResponse> appResponseFuture = future.handle((obj, t) -> {
                 AppResponse result = new AppResponse();
                 if (t != null) {
@@ -96,12 +96,12 @@ public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
                 }
                 return result;
             });
-            return new AsyncRpcResult(appResponseFuture, invocation);
+            return new AsyncRpcResult(appResponseFuture, invocation);  /* 3、返回 正常结果 */
         } catch (InvocationTargetException e) {
             if (RpcContext.getContext().isAsyncStarted() && !RpcContext.getContext().stopAsync()) {
                 logger.error("Provider async started, but got an exception from the original method, cannot write the exception back to consumer because an async result may have returned the new thread.", e);
             }
-            return AsyncRpcResult.newDefaultAsyncResult(null, e.getTargetException(), invocation);
+            return AsyncRpcResult.newDefaultAsyncResult(null, e.getTargetException(), invocation);/* 4、返回 异常结果 */
         } catch (Throwable e) {
             throw new RpcException("Failed to invoke remote proxy method " + invocation.getMethodName() + " to " + getUrl() + ", cause: " + e.getMessage(), e);
         }

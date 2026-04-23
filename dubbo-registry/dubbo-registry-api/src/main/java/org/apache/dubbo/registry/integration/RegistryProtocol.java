@@ -114,7 +114,7 @@ import static org.apache.dubbo.rpc.cluster.Constants.WEIGHT_KEY;
 /**
  * RegistryProtocol
  */
-public class RegistryProtocol implements Protocol {
+public class RegistryProtocol implements Protocol {/* 底层 - 注册协议Protocol - 无（Protocol）构造函数，所以不是包装类  */
     public static final String[] DEFAULT_REGISTER_PROVIDER_KEYS = {
             APPLICATION_KEY, CODEC_KEY, EXCHANGER_KEY, SERIALIZATION_KEY, CLUSTER_KEY, CONNECTIONS_KEY, DEPRECATED_KEY,
             GROUP_KEY, LOADBALANCE_KEY, MOCK_KEY, PATH_KEY, TIMEOUT_KEY, TOKEN_KEY, VERSION_KEY, WARMUP_KEY,
@@ -131,11 +131,11 @@ public class RegistryProtocol implements Protocol {
     private final ProviderConfigurationListener providerConfigurationListener = new ProviderConfigurationListener();
     //To solve the problem of RMI repeated exposure port conflicts, the services that have been exposed are no longer exposed.
     //providerurl <--> exporter
-    private final ConcurrentMap<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<>();
-    private Cluster cluster;
-    private Protocol protocol;
+    private final ConcurrentMap<String, ExporterChangeableWrapper<?>> bounds = new ConcurrentHashMap<>();/* providerurl <--> exporter */
+    private Cluster cluster;/*  依赖注入- adaptive类 */
+    private Protocol protocol;/*  依赖注入- adaptive类 */
     private RegistryFactory registryFactory;
-    private ProxyFactory proxyFactory;
+    private ProxyFactory proxyFactory; /* 默认Javassist */
 
     private ConcurrentMap<URL, ReExportTask> reExportFailedTasks = new ConcurrentHashMap<>();
     private HashedWheelTimer retryTimer = new HashedWheelTimer(new NamedThreadFactory("DubboReexportTimer", true), DEFAULT_REGISTRY_RETRY_PERIOD, TimeUnit.MILLISECONDS, 128);
@@ -178,7 +178,7 @@ public class RegistryProtocol implements Protocol {
     }
 
     private void register(URL registryUrl, URL registeredProviderUrl) {
-        Registry registry = registryFactory.getRegistry(registryUrl);
+        Registry registry = registryFactory.getRegistry(registryUrl);  // 调用ZookeeperRegistry的register方法
         registry.register(registeredProviderUrl);
     }
 
@@ -190,7 +190,7 @@ public class RegistryProtocol implements Protocol {
                 registered));
     }
 
-    @Override
+    @Override /* 暴露服务 后 -- 注册到zookeeper */
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         URL registryUrl = getRegistryUrl(originInvoker);
         // url to export locally
@@ -206,16 +206,16 @@ public class RegistryProtocol implements Protocol {
 
         providerUrl = overrideUrlWithConfig(providerUrl, overrideSubscribeListener);
         //export invoker
-        final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl);
-
+        final ExporterChangeableWrapper<T> exporter = doLocalExport(originInvoker, providerUrl); /* 1、根据动态配置重写了providerUrl之后，就会调用DubboProtocol 导出服务 */
+        // 得到注册中心-ZookeeperRegistry
         // url to registry
         final Registry registry = getRegistry(originInvoker);
         final URL registeredProviderUrl = getUrlToRegistry(providerUrl, registryUrl);
-
+        //是否需要注册到注册中心
         // decide if we need to delay publish
         boolean register = providerUrl.getParameter(REGISTER_KEY, true);
         if (register) {
-            register(registryUrl, registeredProviderUrl);
+            register(registryUrl, registeredProviderUrl); /* 2、注册服务，把简化后的服务提供者url注册到registryUrl中去 */
         }
 
         // register stated url on provider model
@@ -252,10 +252,10 @@ public class RegistryProtocol implements Protocol {
     @SuppressWarnings("unchecked")
     private <T> ExporterChangeableWrapper<T> doLocalExport(final Invoker<T> originInvoker, URL providerUrl) {
         String key = getCacheKey(originInvoker);
-
+        /*  这里实际利用的就是DubboProtocol 暴露服务 -->  启动 NettyServer */
         return (ExporterChangeableWrapper<T>) bounds.computeIfAbsent(key, s -> {
             Invoker<?> invokerDelegate = new InvokerDelegate<>(originInvoker, providerUrl);
-            return new ExporterChangeableWrapper<>((Exporter<T>) protocol.export(invokerDelegate), originInvoker);
+            return new ExporterChangeableWrapper<>((Exporter<T>) protocol.export(invokerDelegate), originInvoker); /* （包装类）ProtocolListenerWrapper -->（包装类）ProtocolFilterWrapper（添加过滤器） --> （原始类）DubboProtocol */
         });
     }
 
