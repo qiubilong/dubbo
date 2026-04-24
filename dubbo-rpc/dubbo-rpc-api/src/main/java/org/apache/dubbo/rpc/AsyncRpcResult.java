@@ -55,11 +55,11 @@ public class AsyncRpcResult implements Result { /* rpc结果 - 保存 AppRespons
      */
     private RpcContext storedContext;
     private RpcContext storedServerContext;
-    private Executor executor;
+    private Executor executor;  /* ThreadlessExecutor */
 
     private Invocation invocation;/* 调用参数封装 */
 
-    private CompletableFuture<AppResponse> responseFuture;
+    private CompletableFuture<AppResponse> responseFuture; /* DefaultFuture */
 
     public AsyncRpcResult(CompletableFuture<AppResponse> future, Invocation invocation) {
         this.responseFuture = future;

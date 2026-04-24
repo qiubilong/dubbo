@@ -1,0 +1,3 @@
+red=com.tuling.car.RedCar
+black=com.tuling.car.BlackCar
+com.tuling.car.CarWrapper

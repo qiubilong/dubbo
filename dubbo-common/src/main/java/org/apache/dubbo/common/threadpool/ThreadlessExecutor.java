@@ -44,7 +44,7 @@ public class ThreadlessExecutor extends AbstractExecutorService {
 
     private ExecutorService sharedExecutor;
 
-    private CompletableFuture<?> waitingFuture;
+    private CompletableFuture<?> waitingFuture; /* DefaultFuture */
 
     private boolean finished = false;
 
@@ -160,7 +160,7 @@ public class ThreadlessExecutor extends AbstractExecutorService {
     }
 
     @Override
-    public List<Runnable> shutdownNow() {
+    public List<Runnable> shutdownNow() { /* 优雅停机异常，唤醒业务线程 */
         notifyReturn(new IllegalStateException("Consumer is shutting down and this call is going to be stopped without " +
                 "receiving any result, usually this is called by a slow provider instance or bad service implementation."));
         return Collections.emptyList();

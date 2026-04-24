@@ -630,7 +630,7 @@ public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是�
             }
 
             for (ReferenceCountExchangeClient client : clients) {
-                closeReferenceCountExchangeClient(client);
+                closeReferenceCountExchangeClient(client);/* 关闭客户端连接 */
             }
         }
 
@@ -652,7 +652,7 @@ public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是�
                 logger.info("Close dubbo connect: " + client.getLocalAddress() + "-->" + client.getRemoteAddress());
             }
 
-            client.close(ConfigurationUtils.getServerShutdownTimeout());
+            client.close(ConfigurationUtils.getServerShutdownTimeout()); /* 默认10s */
 
             // TODO
             /*

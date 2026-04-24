@@ -161,7 +161,7 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
                 client.close();
 
             } else {
-                client.close(timeout);
+                client.close(timeout);/* 关闭client */
             }
 
             replaceWithLazyClient();

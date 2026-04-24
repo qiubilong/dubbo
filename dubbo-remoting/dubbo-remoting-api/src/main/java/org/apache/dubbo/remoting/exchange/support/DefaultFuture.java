@@ -138,13 +138,13 @@ public class DefaultFuture extends CompletableFuture<Object> {
      * @param channel channel to close
      */
     public static void closeChannel(Channel channel) {
-        for (Map.Entry<Long, Channel> entry : CHANNELS.entrySet()) {
+        for (Map.Entry<Long, Channel> entry : CHANNELS.entrySet()) {/* 清除所有未完成的请求 */
             if (channel.equals(entry.getValue())) {
                 DefaultFuture future = getFuture(entry.getKey());
                 if (future != null && !future.isDone()) {
                     ExecutorService futureExecutor = future.getExecutor();
                     if (futureExecutor != null && !futureExecutor.isTerminated()) {
-                        futureExecutor.shutdownNow();
+                        futureExecutor.shutdownNow();/* Consumer is shutting down 异常 ，唤醒业务线程 */
                     }
 
                     Response disconnectResponse = new Response(future.getId());

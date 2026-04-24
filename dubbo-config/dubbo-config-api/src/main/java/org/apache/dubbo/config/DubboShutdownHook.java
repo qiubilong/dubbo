@@ -125,7 +125,7 @@ public class DubboShutdownHook extends Thread { /* Dubbo 优雅停机 */
 
     public static void destroyAll() {
         if (destroyed.compareAndSet(false, true)) {
-            AbstractRegistryFactory.destroyAll();
+            AbstractRegistryFactory.destroyAll(); /* 注销注册中心 */
             destroyProtocols();
         }
     }

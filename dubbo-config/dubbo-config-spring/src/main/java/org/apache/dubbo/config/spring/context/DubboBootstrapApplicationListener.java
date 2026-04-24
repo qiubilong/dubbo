@@ -60,7 +60,7 @@ public class DubboBootstrapApplicationListener extends OneTimeExecutionApplicati
     }
 
     private void onContextClosedEvent(ContextClosedEvent event) {
-        dubboBootstrap.stop();
+        dubboBootstrap.stop();/* 优雅停机 */
     }
 
     @Override

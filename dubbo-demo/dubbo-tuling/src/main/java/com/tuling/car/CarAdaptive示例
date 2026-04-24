@@ -1,0 +1,18 @@
+public class Car$Adaptive implements com.tuling.car.Car {
+
+    public java.lang.String sayHell()  {
+        throw new UnsupportedOperationException("The method public abstract java.lang.String com.tuling.car.Car.sayHell() of interface com.tuling.car.Car is not adaptive method!");
+    }
+
+    public java.lang.String getCarName(org.apache.dubbo.common.URL arg0)  {
+        if (arg0 == null) throw new IllegalArgumentException("url == null");
+        org.apache.dubbo.common.URL url = arg0;
+
+        String extName = url.getParameter("carType");
+        if(extName == null) throw new IllegalStateException("Failed to get extension (com.tuling.car.Car) name from url (" + url.toString() + ") use keys([carType])");
+
+        com.tuling.car.Car extension = (com.tuling.car.Car)ExtensionLoader.getExtensionLoader(com.tuling.car.Car.class).getExtension(extName);
+
+        return extension.getCarName(arg0);
+    }
+}

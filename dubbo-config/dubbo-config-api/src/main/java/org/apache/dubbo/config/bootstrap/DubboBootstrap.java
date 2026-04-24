@@ -840,7 +840,7 @@ public class DubboBootstrap extends GenericEventListener {
     }
 
     public DubboBootstrap stop() throws IllegalStateException {
-        destroy();
+        destroy();/* 优雅停机 */
         return this;
     }
     /* serve for builder apis, begin */

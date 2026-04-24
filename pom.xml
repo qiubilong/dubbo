@@ -150,7 +150,7 @@
         <module>dubbo-configcenter</module>
         <module>dubbo-dependencies</module>
         <module>dubbo-metadata</module>
-        <module>dubbo-build-tools</module>
+        <module>dubbo-build-tools</module><module>dubbo-demo/dubbo-tuling</module>
     </modules>
 
     <dependencyManagement>

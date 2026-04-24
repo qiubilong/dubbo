@@ -149,7 +149,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     public void close() {
         try {
             // graceful close
-            DefaultFuture.closeChannel(channel);
+            DefaultFuture.closeChannel(channel); /* 清除所有未完成的请求 */
             channel.close();
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
@@ -166,7 +166,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         if (timeout > 0) {
             long start = System.currentTimeMillis();
             while (DefaultFuture.hasFuture(channel)
-                    && System.currentTimeMillis() - start < timeout) {
+                    && System.currentTimeMillis() - start < timeout) {/* 默认等待 timeout=10s */
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
