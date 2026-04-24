@@ -97,12 +97,12 @@ public class TagRouter extends AbstractRouter implements ConfigurationListener {
         }
 
         List<Invoker<T>> result = invokers;
-        String tag = StringUtils.isEmpty(invocation.getAttachment(TAG_KEY)) ? url.getParameter(TAG_KEY) :
+        String tag = StringUtils.isEmpty(invocation.getAttachment(TAG_KEY)) ? url.getParameter(TAG_KEY) :/* 获取调用对象invocation中所设置的tag */
                 invocation.getAttachment(TAG_KEY);
 
         // if we are requesting for a Provider with a specific tag
         if (StringUtils.isNotEmpty(tag)) {
-            List<String> addresses = tagRouterRuleCopy.getTagnameToAddresses().get(tag);
+            List<String> addresses = tagRouterRuleCopy.getTagnameToAddresses().get(tag);  /* 获取对应tag所设置的服务提供者address */
             // filter by dynamic tag group first
             if (CollectionUtils.isNotEmpty(addresses)) {
                 result = filterInvoker(invokers, invoker -> addressMatches(invoker.getUrl(), addresses));
@@ -237,7 +237,7 @@ public class TagRouter extends AbstractRouter implements ConfigurationListener {
         Invoker<T> invoker = invokers.get(0);
         URL url = invoker.getUrl();
         String providerApplication = url.getParameter(CommonConstants.REMOTE_APPLICATION_KEY);
-
+        // 标签路由只能设置在某个应用上
         if (StringUtils.isEmpty(providerApplication)) {
             logger.error("TagRouter must getConfig from or subscribe to a specific application, but the application " +
                     "in this TagRouter is not specified.");
@@ -245,15 +245,15 @@ public class TagRouter extends AbstractRouter implements ConfigurationListener {
         }
 
         synchronized (this) {
-            if (!providerApplication.equals(application)) {
+            if (!providerApplication.equals(application)) {  // application是TagRouter中的一个属性，表示当前TagRouter是在哪个应用上
                 if (!StringUtils.isEmpty(application)) {
                     ruleRepository.removeListener(application + RULE_SUFFIX, this);
                 }
-                String key = providerApplication + RULE_SUFFIX;
+                String key = providerApplication + RULE_SUFFIX;/*  监听 - 标签路由 */
                 ruleRepository.addListener(key, this);
                 application = providerApplication;
                 String rawRule = ruleRepository.getRule(key, DynamicConfiguration.DEFAULT_GROUP);
-                if (StringUtils.isNotEmpty(rawRule)) {
+                if (StringUtils.isNotEmpty(rawRule)) { /* 读取规则并处理 */
                     this.process(new ConfigChangedEvent(key, DynamicConfiguration.DEFAULT_GROUP, rawRule));
                 }
             }

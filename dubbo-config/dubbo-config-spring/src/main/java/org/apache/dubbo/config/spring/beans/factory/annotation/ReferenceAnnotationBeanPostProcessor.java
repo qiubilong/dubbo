@@ -59,7 +59,7 @@ import static org.springframework.util.StringUtils.hasText;
  * @see com.alibaba.dubbo.config.annotation.Reference
  * @since 2.5.7
  */
-public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBeanPostProcessor implements
+public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBeanPostProcessor implements  /* bean 后置处理器 */
         ApplicationContextAware, ApplicationListener<ServiceBeanExportedEvent> {
 
     /**
@@ -124,28 +124,28 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
     public Map<InjectionMetadata.InjectedElement, ReferenceBean<?>> getInjectedMethodReferenceBeanMap() {
         return Collections.unmodifiableMap(injectedMethodReferenceBeanCache);
     }
-
+    /* 生成 @Reference代理对象 ReferenceBean */
     @Override
     protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean, String beanName, Class<?> injectedType,
                                        InjectionMetadata.InjectedElement injectedElement) throws Exception {
         /**
          * The name of bean that annotated Dubbo's {@link Service @Service} in local Spring {@link ApplicationContext}
          */
-        String referencedBeanName = buildReferencedBeanName(attributes, injectedType);
+        String referencedBeanName = buildReferencedBeanName(attributes, injectedType); /* 按ServiceBean的beanName生成规则来生成referencedBeanName， 规则为ServiceBean:interfaceClassName:version:group */
 
         /**
          * The name of bean that is declared by {@link Reference @Reference} annotation injection
          */
-        String referenceBeanName = getReferenceBeanName(attributes, injectedType);
-
+        String referenceBeanName = getReferenceBeanName(attributes, injectedType);/* 根据@Reference中ID  > @Reference注解的信息 + 接口名 生成referenceBeanName */
+        /* 生成 ReferenceBean 对象工厂 - FactoryBean */
         ReferenceBean referenceBean = buildReferenceBeanIfAbsent(referenceBeanName, attributes, injectedType);
 
         boolean localServiceBean = isLocalServiceBean(referencedBeanName, referenceBean, attributes);
-
+        /* 把referenceBean添加到Spring容器中去 */
         registerReferenceBean(referencedBeanName, referenceBean, attributes, localServiceBean, injectedType);
 
         cacheInjectedReferenceBean(referenceBean, injectedElement);
-
+        /* 调用代理工厂 - 生成 ReferenceBean 代理对象 */
         return getOrCreateProxy(referencedBeanName, referenceBean, localServiceBean, injectedType);
     }
 
@@ -180,7 +180,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
             beanFactory.registerAlias(serviceBeanName, beanName);
         } else { // Remote @Service Bean
             if (!beanFactory.containsBean(beanName)) {
-                beanFactory.registerSingleton(beanName, referenceBean);
+                beanFactory.registerSingleton(beanName, referenceBean);/* spring容器中注入@Reference代理对象工厂 ReferenceBean */
             }
         }
     }
@@ -277,7 +277,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
                     newReferencedBeanInvocationHandler(referencedBeanName));
         } else {
             exportServiceBeanIfNecessary(referencedBeanName); // If the referenced ServiceBean exits, export it immediately
-            return referenceBean.get();
+            return referenceBean.get();/* 生成ReferenceBean代理对象 - ReferenceBean */
         }
     }
 
@@ -375,7 +375,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
             ReferenceBeanBuilder beanBuilder = ReferenceBeanBuilder
                     .create(attributes, applicationContext)
                     .interfaceClass(referencedType);
-            referenceBean = beanBuilder.build();
+            referenceBean = beanBuilder.build();/* new ReferenceBean<Object>() & 填充配置信息 */
             referenceBeanCache.put(referenceBeanName, referenceBean);
         } else if (!referencedType.isAssignableFrom(referenceBean.getInterfaceClass())) {
             throw new IllegalArgumentException("reference bean name " + referenceBeanName + " has been duplicated, but interfaceClass " +

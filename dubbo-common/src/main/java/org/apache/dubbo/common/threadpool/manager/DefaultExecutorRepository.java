@@ -109,7 +109,7 @@ public class DefaultExecutorRepository implements ExecutorRepository {
         if (executor != null) {
             if (executor.isShutdown() || executor.isTerminated()) {
                 executors.remove(portKey);
-                executor = createExecutor(url); /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端默认 CachedThreadPool */
+                executor = createExecutor(url); /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端(低版本)默认 CachedThreadPool ，新版本是fixed */
                 executors.put(portKey, executor);
             }
         }
@@ -159,7 +159,7 @@ public class DefaultExecutorRepository implements ExecutorRepository {
         return SHARED_EXECUTOR;
     }
 
-    private ExecutorService createExecutor(URL url) { /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端默认 CachedThreadPool */
+    private ExecutorService createExecutor(URL url) { /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端（低版本）默认 CachedThreadPool，新版本是fixed */
         return (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);
     }
 

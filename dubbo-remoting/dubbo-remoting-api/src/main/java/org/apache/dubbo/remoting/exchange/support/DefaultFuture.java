@@ -50,9 +50,9 @@ public class DefaultFuture extends CompletableFuture<Object> {
 
     private static final Map<Long, Channel> CHANNELS = new ConcurrentHashMap<>();
 
-    private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<>();
+    private static final Map<Long, DefaultFuture> FUTURES = new ConcurrentHashMap<>();/* 请求ID -- 异步响应Future */
 
-    public static final Timer TIME_OUT_TIMER = new HashedWheelTimer(
+    public static final Timer TIME_OUT_TIMER = new HashedWheelTimer(/* 检查请求超时任务时间轮 */
             new NamedThreadFactory("dubbo-future-timeout", true),
             30,
             TimeUnit.MILLISECONDS);
@@ -82,7 +82,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
         this.id = request.getId();
         this.timeout = timeout > 0 ? timeout : channel.getUrl().getPositiveParameter(TIMEOUT_KEY, DEFAULT_TIMEOUT);
         // put into waiting map.
-        FUTURES.put(id, this);
+        FUTURES.put(id, this);/* 请求ID -- 异步响应Future */
         CHANNELS.put(id, channel);
     }
 
@@ -105,7 +105,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
      * @return a new DefaultFuture
      */
     public static DefaultFuture newFuture(Channel channel, Request request, int timeout, ExecutorService executor) {
-        final DefaultFuture future = new DefaultFuture(channel, request, timeout);
+        final DefaultFuture future = new DefaultFuture(channel, request, timeout);/* 请求ID -- 异步响应Future */
         future.setExecutor(executor);
         // ThreadlessExecutor needs to hold the waiting future in case of circuit return.
         if (executor instanceof ThreadlessExecutor) {
@@ -165,14 +165,14 @@ public class DefaultFuture extends CompletableFuture<Object> {
 
     public static void received(Channel channel, Response response, boolean timeout) {
         try {
-            DefaultFuture future = FUTURES.remove(response.getId());
+            DefaultFuture future = FUTURES.remove(response.getId());/* 找到Future */
             if (future != null) {
                 Timeout t = future.timeoutCheckTask;
                 if (!timeout) {
                     // decrease Time
                     t.cancel();
                 }
-                future.doReceived(response);
+                future.doReceived(response);/* 激活 Future , 唤醒客户端线程 */
             } else {
                 logger.warn("The timeout response finally returned at "
                         + (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date()))
@@ -282,7 +282,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
             }
 
             if (future.getExecutor() != null) {
-                future.getExecutor().execute(() -> notifyTimeout(future));
+                future.getExecutor().execute(() -> notifyTimeout(future)); /* 调用超时 */
             } else {
                 notifyTimeout(future);
             }
@@ -295,7 +295,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
             timeoutResponse.setStatus(future.isSent() ? Response.SERVER_TIMEOUT : Response.CLIENT_TIMEOUT);
             timeoutResponse.setErrorMessage(future.getTimeoutMessage(true));
             // handle response.
-            DefaultFuture.received(future.getChannel(), timeoutResponse, true);
+            DefaultFuture.received(future.getChannel(), timeoutResponse, true);/* 调用超时 */
         }
     }
 }

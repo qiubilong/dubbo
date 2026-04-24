@@ -29,14 +29,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
+/** 在 Dubbo 2.7.5 之前，消费端存在一个严重的性能隐患：独立的消费端线程池（Consumer Thread Pool）会随着并发增加而无限膨胀
  * The most important difference between this Executor and other normal Executor is that this one doesn't manage
  * any thread.
- *
+ * 消费端有一个 CachedThreadPool，核心线程数为 0，最大线程数可达 2^31-1、每个 RPC 响应回来时，都需要从该线程池中分配一个线程进行反序列化处理、高并发场景下（如网关），线程数会急剧增加，导致频繁的线程创建/销毁、内存占用飙升，甚至 OOM
  * Tasks submitted to this executor through {@link #execute(Runnable)} will not get scheduled to a specific thread, though normal executors always do the schedule.
  * Those tasks are stored in a blocking queue and will only be executed when a thread calls {@link #waitAndDrain()}, the thread executing the task
  * is exactly the same as the one calling waitAndDrain.
- */
+ */ /* 复用业务线程：业务线程在等待响应期间被阻塞，当响应返回时，由这个同一个业务线程来执行反序列化工作 */
 public class ThreadlessExecutor extends AbstractExecutorService {
     private static final Logger logger = LoggerFactory.getLogger(ThreadlessExecutor.class.getName());
 
@@ -71,8 +71,8 @@ public class ThreadlessExecutor extends AbstractExecutorService {
     /**
      * Waits until there is a task, executes the task and all queued tasks (if there're any). The task is either a normal
      * response or a timeout response.
-     */
-    public void waitAndDrain() throws InterruptedException {
+     */  /* 业务线程调用 waitAndDrain() 进入等待；响应到达时，IO线程将任务入队并唤醒业务线程 */
+    public void waitAndDrain() throws InterruptedException { /* 等待请求响应、超时 */
         /**
          * Usually, {@link #waitAndDrain()} will only get called once. It blocks for the response for the first time,
          * once the response (the task) reached and being executed waitAndDrain will return, the whole request process
@@ -85,7 +85,7 @@ public class ThreadlessExecutor extends AbstractExecutorService {
         if (finished) {
             return;
         }
-
+        /* 执行 ChannelEventRunnable  、notifyTimeout */
         Runnable runnable = queue.take();
 
         synchronized (lock) {
@@ -135,7 +135,7 @@ public class ThreadlessExecutor extends AbstractExecutorService {
             if (!waiting) {
                 sharedExecutor.execute(runnable);
             } else {
-                queue.add(runnable);
+                queue.add(runnable);/* 调用成功、超时 */
             }
         }
     }

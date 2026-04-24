@@ -439,7 +439,7 @@ public class RegistryProtocol implements Protocol {/* 底层 - 注册协议Proto
     @SuppressWarnings("unchecked")
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         url = getRegistryUrl(url);
-        Registry registry = registryFactory.getRegistry(url);
+        Registry registry = registryFactory.getRegistry(url); /* 拿到注册中心实现，ZookeeperRegistry */
         if (RegistryService.class.equals(type)) {
             return proxyFactory.getInvoker((T) registry, type, url);
         }
@@ -452,16 +452,16 @@ public class RegistryProtocol implements Protocol {/* 底层 - 注册协议Proto
                 return doRefer(getMergeableCluster(), registry, type, url);
             }
         }
-        return doRefer(cluster, registry, type, url);
+        return doRefer(cluster, registry, type, url);/* 生成客户端invoker -- MockClusterInvoker -->FailoverClusterInvoker  */
     }
 
     private Cluster getMergeableCluster() {
         return ExtensionLoader.getExtensionLoader(Cluster.class).getExtension("mergeable");
     }
 
-    private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) {
-        RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);
-        directory.setRegistry(registry);
+    private <T> Invoker<T> doRefer(Cluster cluster, Registry registry, Class<T> type, URL url) { /* 生成 客户端 调用代理 */
+        RegistryDirectory<T> directory = new RegistryDirectory<T>(type, url);/* RegistryDirectory 表示 动态服务目录，拉取监听服务列表 &路由规则 */
+        directory.setRegistry(registry);// 在消费端，最核心的就是RegistryDirectory
         directory.setProtocol(protocol);
         // all attributes of REFER_KEY
         Map<String, String> parameters = new HashMap<String, String>(directory.getConsumerUrl().getParameters());
@@ -469,11 +469,11 @@ public class RegistryProtocol implements Protocol {/* 底层 - 注册协议Proto
         if (directory.isShouldRegister()) {
             directory.setRegisteredConsumerUrl(subscribeUrl);
             registry.register(directory.getRegisteredConsumerUrl());
-        }
-        directory.buildRouterChain(subscribeUrl);
-        directory.subscribe(toSubscribeUrl(subscribeUrl));
+        } /* 构造路由链，利用 zookeeper 加载&监听 路由规则 */
+        directory.buildRouterChain(subscribeUrl);/*  路由链 - (标签路由 --> 应用-条件路由 --> 接口服务-条件路由) */
+        directory.subscribe(toSubscribeUrl(subscribeUrl));/* ##### 利用 zookeeper拉取服务地址列表 --> 服务目录中生成 DubboInvoker --> 启动 NettyClient */
 
-        Invoker<T> invoker = cluster.join(directory);
+        Invoker<T> invoker = cluster.join(directory);/* MockClusterWrapper（MockClusterInvoker） --> FailoverCluster（FailoverClusterInvoker） --> */
         List<RegistryProtocolListener> listeners = findRegistryProtocolListeners(url);
         if (CollectionUtils.isEmpty(listeners)) {
             return invoker;

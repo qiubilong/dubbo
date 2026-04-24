@@ -47,7 +47,7 @@ public interface DubboBeanUtils {
 
         // Since 2.5.7 Register @Reference Annotation Bean Processor as an infrastructure Bean
         registerInfrastructureBean(registry, ReferenceAnnotationBeanPostProcessor.BEAN_NAME,
-                ReferenceAnnotationBeanPostProcessor.class);
+                ReferenceAnnotationBeanPostProcessor.class); /* 注入 ReferenceAnnotationBeanPostProcessor，解析 @Reference */
 
         // Since 2.7.4 [Feature] https://github.com/apache/dubbo/issues/5093
         registerInfrastructureBean(registry, DubboConfigAliasPostProcessor.BEAN_NAME,
@@ -58,7 +58,7 @@ public interface DubboBeanUtils {
                 DubboLifecycleComponentApplicationListener.class);
 
         // Since 2.7.4 Register DubboBootstrapApplicationListener as an infrastructure Bean
-        registerInfrastructureBean(registry, DubboBootstrapApplicationListener.BEAN_NAME,
+        registerInfrastructureBean(registry, DubboBootstrapApplicationListener.BEAN_NAME,/* spring启动事件监听器 --  spring容器启动完成，暴露 @DubboService 服务 */
                 DubboBootstrapApplicationListener.class);
 
         // Since 2.7.6 Register DubboConfigDefaultPropertyValueBeanPostProcessor as an infrastructure Bean

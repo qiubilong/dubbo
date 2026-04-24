@@ -38,11 +38,11 @@ import static org.apache.dubbo.common.constants.CommonConstants.INVOKER_LISTENER
 /**
  * ListenerProtocol
  */
-public class ProtocolListenerWrapper implements Protocol {
+public class ProtocolListenerWrapper implements Protocol { /* 支持服务暴露 - 监听器 */
 
-    private final Protocol protocol;
+    private final Protocol protocol;/* ProtocolFilterWrapper */
 
-    public ProtocolListenerWrapper(Protocol protocol) {
+    public ProtocolListenerWrapper(Protocol protocol) {/* 这种构造函数 - 包装类 */
         if (protocol == null) {
             throw new IllegalArgumentException("protocol == null");
         }
@@ -57,9 +57,9 @@ public class ProtocolListenerWrapper implements Protocol {
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
         if (UrlUtils.isRegistry(invoker.getUrl())) {
-            return protocol.export(invoker);
+            return protocol.export(invoker);/* 1、第一次执行，protocol=registry --> ProtocolFilterWrapper */
         }
-        return new ListenerExporterWrapper<T>(protocol.export(invoker),
+        return new ListenerExporterWrapper<T>(protocol.export(invoker),   /* 2、第二次执行，protocol=dubbo --> ProtocolFilterWrapper - 包装过滤器 */
                 Collections.unmodifiableList(ExtensionLoader.getExtensionLoader(ExporterListener.class)
                         .getActivateExtension(invoker.getUrl(), EXPORTER_LISTENER_KEY)));
     }
@@ -67,9 +67,9 @@ public class ProtocolListenerWrapper implements Protocol {
     @Override
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         if (UrlUtils.isRegistry(url)) {
-            return protocol.refer(type, url);
+            return protocol.refer(type, url);/* 1、第一次执行 ProtocolFilterWrapper */
         }
-        return new ListenerInvokerWrapper<T>(protocol.refer(type, url),
+        return new ListenerInvokerWrapper<T>(protocol.refer(type, url),/* 2、第二次执行 */
                 Collections.unmodifiableList(
                         ExtensionLoader.getExtensionLoader(InvokerListener.class)
                                 .getActivateExtension(url, INVOKER_LISTENER_KEY)));

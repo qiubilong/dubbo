@@ -79,7 +79,7 @@ public class MockClusterInvoker<T> implements Invoker<T> {
         String value = getUrl().getMethodParameter(invocation.getMethodName(), MOCK_KEY, Boolean.FALSE.toString()).trim();
         if (value.length() == 0 || "false".equalsIgnoreCase(value)) {
             //no mock
-            result = this.invoker.invoke(invocation);
+            result = this.invoker.invoke(invocation); /* 1、无 mock - FailoverClusterInvoker - AbstractClusterInvoker */
         } else if (value.startsWith("force")) {
             if (logger.isWarnEnabled()) {
                 logger.warn("force-mock: " + invocation.getMethodName() + " force-mock enabled , url : " + getUrl());
@@ -89,7 +89,7 @@ public class MockClusterInvoker<T> implements Invoker<T> {
         } else {
             //fail-mock
             try {
-                result = this.invoker.invoke(invocation);
+                result = this.invoker.invoke(invocation); /* 2、 强制 mock  ， 不发起远程调用 */
 
                 //fix:#4585
                 if(result.getException() != null && result.getException() instanceof RpcException){
@@ -109,7 +109,7 @@ public class MockClusterInvoker<T> implements Invoker<T> {
                 if (logger.isWarnEnabled()) {
                     logger.warn("fail-mock: " + invocation.getMethodName() + " fail-mock enabled , url : " + getUrl(), e);
                 }
-                result = doMockInvoke(invocation, e);
+                result = doMockInvoke(invocation, e);/* 3、 非业务异常 mock   */
             }
         }
         return result;

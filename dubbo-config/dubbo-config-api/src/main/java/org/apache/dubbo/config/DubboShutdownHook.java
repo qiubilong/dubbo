@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Because {@link ApplicationShutdownHooks} use {@link java.util.IdentityHashMap}
  * to store the shutdown hooks.
  */
-public class DubboShutdownHook extends Thread {
+public class DubboShutdownHook extends Thread { /* Dubbo 优雅停机 */
 
     private static final Logger logger = LoggerFactory.getLogger(DubboShutdownHook.class);
 

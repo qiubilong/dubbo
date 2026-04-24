@@ -156,9 +156,9 @@ public class ProtocolFilterWrapper implements Protocol { /* 支持服务调用�
     @Override
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
         if (UrlUtils.isRegistry(url)) {
-            return protocol.refer(type, url);
-        }
-        return buildInvokerChain(protocol.refer(type, url), REFERENCE_FILTER_KEY, CommonConstants.CONSUMER);
+            return protocol.refer(type, url);/* 1、第一次执行，protocol=registry -- > RegistryProtocol */
+        }/* 2、第二次执行，客户端支持回调invoker - CallbackRegistrationInvoker ->  构造客户端invoker过滤器链 -> ConsumerContextFilter */
+        return buildInvokerChain(protocol.refer(type, url), REFERENCE_FILTER_KEY, CommonConstants.CONSUMER);/* protocol = DubboProtocol */
     }
 
     @Override

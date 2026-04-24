@@ -169,16 +169,16 @@ public class ZookeeperRegistry extends FailbackRegistry {
                 }
             } else {
                 List<URL> urls = new ArrayList<>();
-                for (String path : toCategoriesPath(url)) {
+                for (String path : toCategoriesPath(url)) {/* 服务地址 -  /dubbo/org.apache.dubbo.demo.DemoService/providers */
                     ConcurrentMap<NotifyListener, ChildListener> listeners = zkListeners.computeIfAbsent(url, k -> new ConcurrentHashMap<>());
                     ChildListener zkListener = listeners.computeIfAbsent(listener, k -> (parentPath, currentChilds) -> ZookeeperRegistry.this.notify(url, k, toUrlsWithEmpty(url, parentPath, currentChilds)));
                     zkClient.create(path, false);
-                    List<String> children = zkClient.addChildListener(path, zkListener);
+                    List<String> children = zkClient.addChildListener(path, zkListener);/* 添加 zookeeper 监听器，并返回 子节点列表，也就是服务列表 */
                     if (children != null) {
-                        urls.addAll(toUrlsWithEmpty(url, path, children));
+                        urls.addAll(toUrlsWithEmpty(url, path, children));/* 例如 服务列表内容转 URL */
                     }
-                }
-                notify(url, listener, urls);
+                } /* 这里的urls就是 监听路径的 子节点列表，比如下面这个三个目录下的路径*/
+                notify(url, listener, urls);           // "/dubbo/org.apache.dubbo.demo.DemoService/providers" 、"/dubbo/org.apache.dubbo.demo.DemoService/configurators"、  /dubbo/org.apache.dubbo.demo.DemoService/routers"
             }
         } catch (Throwable e) {
             throw new RpcException("Failed to subscribe " + url + " to zookeeper " + getUrl() + ", cause: " + e.getMessage(), e);

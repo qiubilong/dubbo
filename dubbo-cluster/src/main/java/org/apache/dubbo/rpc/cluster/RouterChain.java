@@ -45,16 +45,16 @@ public class RouterChain<T> {
     public static <T> RouterChain<T> buildChain(URL url) {
         return new RouterChain<>(url);
     }
-
-    private RouterChain(URL url) {
-        List<RouterFactory> extensionFactories = ExtensionLoader.getExtensionLoader(RouterFactory.class)
+                                                                                                          /* 1 = {TagRouterFactory@2881}      // 标签路由 - 服务端配置 - 服务分组 */
+    private RouterChain(URL url) {                                                                        /* 2 = {AppRouterFactory@2882}      // Consumer应用 - 条件路由         */
+        List<RouterFactory> extensionFactories = ExtensionLoader.getExtensionLoader(RouterFactory.class)  /* 3 = {ServiceRouterFactory@2883}  // 接口服务 - 条件路由      */
                 .getActivateExtension(url, "router");
 
         List<Router> routers = extensionFactories.stream()
-                .map(factory -> factory.getRouter(url))
+                .map(factory -> factory.getRouter(url))/* 创建路由规则 --> 利用zookeeper 加载 & 监听路由规则 */
                 .collect(Collectors.toList());
 
-        initWithRouters(routers);
+        initWithRouters(routers); /* 标签路由 - 应用-条件路由 - 接口服务-条件路由 */
     }
 
     /**
@@ -107,6 +107,6 @@ public class RouterChain<T> {
      */
     public void setInvokers(List<Invoker<T>> invokers) {
         this.invokers = (invokers == null ? Collections.emptyList() : invokers);
-        routers.forEach(router -> router.notify(this.invokers));
+        routers.forEach(router -> router.notify(this.invokers));/* 更新 标签路由 */
     }
 }

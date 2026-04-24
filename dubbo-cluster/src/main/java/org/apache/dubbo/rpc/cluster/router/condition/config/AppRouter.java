@@ -30,7 +30,7 @@ public class AppRouter extends ListenableRouter {
     private static final int APP_ROUTER_DEFAULT_PRIORITY = 150;
 
     public AppRouter(URL url) {
-        super(url, url.getParameter(CommonConstants.APPLICATION_KEY));
+        super(url, url.getParameter(CommonConstants.APPLICATION_KEY));  /* 拿到应用名 */
         this.priority = APP_ROUTER_DEFAULT_PRIORITY;
     }
 }

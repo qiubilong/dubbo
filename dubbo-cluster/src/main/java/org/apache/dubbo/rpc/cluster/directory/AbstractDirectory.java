@@ -42,13 +42,13 @@ public abstract class AbstractDirectory<T> implements Directory<T> {
     // logger
     private static final Logger logger = LoggerFactory.getLogger(AbstractDirectory.class);
 
-    private final URL url;
+    private final URL url;/* zookeeper地址 */
 
     private volatile boolean destroyed = false;
 
     private volatile URL consumerUrl;
 
-    protected RouterChain<T> routerChain;
+    protected RouterChain<T> routerChain;/* 服务路由 - 过滤链 */
 
     public AbstractDirectory(URL url) {
         this(url, null);

@@ -70,7 +70,7 @@ public class NettyClient extends AbstractClient {
      * replace this with new channel and close old channel.
      * <b>volatile, please copy reference to use.</b>
      */
-    private volatile Channel channel;
+    private volatile Channel channel; /* TCP 连接通道 */
 
     /**
      * The constructor of NettyClient.
@@ -79,7 +79,7 @@ public class NettyClient extends AbstractClient {
     public NettyClient(final URL url, final ChannelHandler handler) throws RemotingException {
     	// you can customize name and type of client thread pool by THREAD_NAME_KEY and THREADPOOL_KEY in CommonConstants.
     	// the handler will be wrapped: MultiMessageHandler->HeartbeatHandler->handler
-    	super(url, wrapChannelHandler(url, handler));
+    	super(url, wrapChannelHandler(url, handler));/* 初始化Netty客户端 - AllChannelHandler -  客户端 默认Cache异步线程池 - 处理服务端响应  */
     }
 
     /**
@@ -88,8 +88,8 @@ public class NettyClient extends AbstractClient {
      * @throws Throwable
      */
     @Override
-    protected void doOpen() throws Throwable {
-        final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this);
+    protected void doOpen() throws Throwable { /* 构建netty客户端 */
+        final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this); /* netty处理器 -- AllChannelHandler  */
         bootstrap = new Bootstrap();
         bootstrap.group(NIO_EVENT_LOOP_GROUP)
                 .option(ChannelOption.SO_KEEPALIVE, true)

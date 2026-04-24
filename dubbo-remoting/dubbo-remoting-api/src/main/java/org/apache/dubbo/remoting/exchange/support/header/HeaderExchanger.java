@@ -35,7 +35,7 @@ public class HeaderExchanger implements Exchanger {
     public static final String NAME = "header";
 
     @Override
-    public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
+    public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {/* 构建netty客户端，handler = DubboProtocol.requestHandler  */
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
     // 为什么在connect和bind时都是DecodeHandler，解码，解的是把InputStream解析成RpcInvocation对象

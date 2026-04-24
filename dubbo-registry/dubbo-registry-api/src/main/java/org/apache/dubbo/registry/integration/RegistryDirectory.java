@@ -101,12 +101,12 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             .getAdaptiveExtension();
 
     private final String serviceKey; // Initialization at construction time, assertion not null
-    private final Class<T> serviceType; // Initialization at construction time, assertion not null
+    private final Class<T> serviceType; /* 接口类型 */  // Initialization at construction time, assertion not null
     private final Map<String, String> queryMap; // Initialization at construction time, assertion not null
     private final URL directoryUrl; // Initialization at construction time, assertion not null, and always assign non null value
     private final boolean multiGroup;
-    private Protocol protocol; // Initialization at the time of injection, the assertion is not null
-    private Registry registry; // Initialization at the time of injection, the assertion is not null
+    private Protocol protocol; /* adaptive 类 */ // Initialization at the time of injection, the assertion is not null
+    private Registry registry; /* 注册中心 - ZookeeperRegistry */ // Initialization at the time of injection, the assertion is not null
     private volatile boolean forbidden = false;
     private boolean shouldRegister;
     private boolean shouldSimplified;
@@ -125,8 +125,8 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
 
     // Map<url, Invoker> cache service url to invoker mapping.
     private volatile Map<String, Invoker<T>> urlInvokerMap; // The initial value is null and the midway may be assigned to null, please use the local variable reference
-    private volatile List<Invoker<T>> invokers;
-
+    private volatile List<Invoker<T>> invokers; /* DubboInvoker - 服务列表 */
+    /* 父类   protected RouterChain<T> routerChain;  服务路由 - 过滤链 */
     // Set<invokerUrls> cache invokeUrls to invokers mapping.
     private volatile Set<URL> cachedInvokerUrls; // The initial value is null and the midway may be assigned to null, please use the local variable reference
 
@@ -182,7 +182,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         setConsumerUrl(url);
         CONSUMER_CONFIGURATION_LISTENER.addNotifyListener(this);
         serviceConfigurationListener = new ReferenceConfigurationListener(this, url);
-        registry.subscribe(url, this);
+        registry.subscribe(url, this);/* 子类 FailbackRegistry --  利用zookeeper 拉取 & 监听 服务列表 --> 回调 notify()  --> 构建dubboInvoker */
     }
 
     public void unSubscribe(URL url) {
@@ -226,7 +226,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     }
 
     @Override
-    public synchronized void notify(List<URL> urls) {
+    public synchronized void notify(List<URL> urls) {/* 监听zookeeper 服务地址 --> 生成 DubboInvoker */
         Map<String, List<URL>> categoryUrls = urls.stream()
                 .filter(Objects::nonNull)
                 .filter(this::isValidCategory)
@@ -251,7 +251,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                 providerURLs = addressListener.notify(providerURLs, getConsumerUrl(),this);
             }
         }
-        refreshOverrideAndInvoker(providerURLs);
+        refreshOverrideAndInvoker(providerURLs);/* ## 利用 urls=服务地址列表  创建 DubboInvoker --> NettyClient */
     }
 
     private String judgeCategory(URL url) {
@@ -268,7 +268,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     private void refreshOverrideAndInvoker(List<URL> urls) {
         // mock zookeeper://xxx?mock=return null
         overrideDirectoryUrl();
-        refreshInvoker(urls);
+        refreshInvoker(urls);/*   创建 DubboInvoker --> NettyClient */
     }
 
     /**
@@ -308,7 +308,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             }
             if (invokerUrls.isEmpty()) {
                 return;
-            }
+            }                            /* 利用服务地址列表 invokerUrls  创建 DubboInvoker --> NettyClient */
             Map<String, Invoker<T>> newUrlInvokerMap = toInvokers(invokerUrls);// Translate url list to Invoker map
 
             /**
@@ -328,7 +328,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
             List<Invoker<T>> newInvokers = Collections.unmodifiableList(new ArrayList<>(newUrlInvokerMap.values()));
             // pre-route and build cache, notice that route cache should build on original Invoker list.
             // toMergeMethodInvokerMap() will wrap some invokers having different groups, those wrapped invokers not should be routed.
-            routerChain.setInvokers(newInvokers);
+            routerChain.setInvokers(newInvokers);/* 监听更新标签路由 */
             this.invokers = multiGroup ? toMergeInvokerList(newInvokers) : newInvokers;
             this.urlInvokerMap = newUrlInvokerMap;
 
@@ -451,7 +451,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
                     } else {
                         enabled = url.getParameter(ENABLED_KEY, true);
                     }
-                    if (enabled) {
+                    if (enabled) {  /* （包装类）ProtocolListenerWrapper --> (包装类)ProtocolFilterWrapper -> DubboProtocol.refer()-AbstractProtocol  -- AsyncToSyncInvoker --> DubboInvoker */
                         invoker = new InvokerDelegate<>(protocol.refer(serviceType, url), url, providerUrl);
                     }
                 } catch (Throwable t) {
@@ -661,7 +661,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     }
 
     public void buildRouterChain(URL url) {
-        this.setRouterChain(RouterChain.buildChain(url));
+        this.setRouterChain(RouterChain.buildChain(url)); /* 构建路由规则链 --> 标签路由 - 应用条件路由 - 接口服务条件路由  */
     }
 
     /**

@@ -253,10 +253,10 @@ public abstract class AbstractClusterInvoker<T> implements Invoker<T> {
             ((RpcInvocation) invocation).addObjectAttachments(contextAttachments);
         }
 
-        List<Invoker<T>> invokers = list(invocation);
-        LoadBalance loadbalance = initLoadBalance(invokers, invocation);
+        List<Invoker<T>> invokers = list(invocation); /* 服务路由 - 过滤可用列表 */
+        LoadBalance loadbalance = initLoadBalance(invokers, invocation);/* 负载均衡 - RandomLoadBalance */
         RpcUtils.attachInvocationIdIfAsync(getUrl(), invocation);
-        return doInvoke(invocation, invokers, loadbalance);
+        return doInvoke(invocation, invokers, loadbalance);/* 子类 - FailoverClusterInvoker */
     }
 
     protected void checkWhetherDestroyed() {

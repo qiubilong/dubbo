@@ -40,19 +40,19 @@ import java.util.stream.Collectors;
 
 /**
  * Abstract router which listens to dynamic configuration
- */
+ */                   /* 可监听变化 的 条件路由 */
 public abstract class ListenableRouter extends AbstractRouter implements ConfigurationListener {
     public static final String NAME = "LISTENABLE_ROUTER";
     private static final String RULE_SUFFIX = ".condition-router";
 
     private static final Logger logger = LoggerFactory.getLogger(ListenableRouter.class);
     private ConditionRouterRule routerRule;
-    private List<ConditionRouter> conditionRouters = Collections.emptyList();
+    private List<ConditionRouter> conditionRouters = Collections.emptyList();/* 路由条件规则 */
 
     public ListenableRouter(URL url, String ruleKey) {
         super(url);
         this.force = false;
-        this.init(ruleKey);
+        this.init(ruleKey); /* 加载 & 监听zookeeper路径内容 */
     }
 
     @Override
@@ -68,7 +68,7 @@ public abstract class ListenableRouter extends AbstractRouter implements Configu
         } else {
             try {
                 routerRule = ConditionRuleParser.parse(event.getContent());
-                generateConditions(routerRule);
+                generateConditions(routerRule);/* 解析条件规则 */
             } catch (Exception e) {
                 logger.error("Failed to parse the raw condition rule and it will not take effect, please check " +
                         "if the condition rule matches with the template, the raw rule is:\n " + event.getContent(), e);
@@ -107,7 +107,7 @@ public abstract class ListenableRouter extends AbstractRouter implements Configu
     private void generateConditions(ConditionRouterRule rule) {
         if (rule != null && rule.isValid()) {
             this.conditionRouters = rule.getConditions()
-                    .stream()
+                    .stream()     /* 解析条件规则 */
                     .map(condition -> new ConditionRouter(condition, rule.isForce(), rule.isEnabled()))
                     .collect(Collectors.toList());
         }
@@ -117,11 +117,11 @@ public abstract class ListenableRouter extends AbstractRouter implements Configu
         if (StringUtils.isEmpty(ruleKey)) {
             return;
         }
-        String routerKey = ruleKey + RULE_SUFFIX;
-        ruleRepository.addListener(routerKey, this);
-        String rule = ruleRepository.getRule(routerKey, DynamicConfiguration.DEFAULT_GROUP);
+        String routerKey = ruleKey + RULE_SUFFIX;   // 服务名+".condition-router"，或 应用名+".condition-router"
+        ruleRepository.addListener(routerKey, this);   // 绑定一个监听器去监听routerKey对应的路径，当前类ListenableRouter就自带了一个监听器
+        String rule = ruleRepository.getRule(routerKey, DynamicConfiguration.DEFAULT_GROUP); // 绑定完监听器后，主动的从配置中心获取一下当前服务或消费者应用的对应的路由配置
         if (StringUtils.isNotEmpty(rule)) {
-            this.process(new ConfigChangedEvent(routerKey, DynamicConfiguration.DEFAULT_GROUP, rule));
+            this.process(new ConfigChangedEvent(routerKey, DynamicConfiguration.DEFAULT_GROUP, rule));/* 解析条件规则 */
         }
     }
 }

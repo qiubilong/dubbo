@@ -330,11 +330,11 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         removeFailedSubscribed(url, listener);
         try {
             // Sending a subscription request to the server side
-            doSubscribe(url, listener);
+            doSubscribe(url, listener);/* 1、拉取&监听 zookeeper 服务地址路径 */
         } catch (Exception e) {
             Throwable t = e;
 
-            List<URL> urls = getCacheUrls(url);
+            List<URL> urls = getCacheUrls(url);/* 2、zookeeper 不可用，获取本地缓存 */
             if (CollectionUtils.isNotEmpty(urls)) {
                 notify(url, listener, urls);
                 logger.error("Failed to subscribe " + url + ", Using cached list: " + urls + " from cache file: " + getUrl().getParameter(FILE_KEY, System.getProperty("user.home") + "/dubbo-registry-" + url.getHost() + ".cache") + ", cause: " + t.getMessage(), t);

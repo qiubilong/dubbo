@@ -57,7 +57,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
 
     static void handleResponse(Channel channel, Response response) throws RemotingException {
         if (response != null && !response.isHeartbeat()) {
-            DefaultFuture.received(channel, response);
+            DefaultFuture.received(channel, response); /* 客户端请求响应，激活Future，唤醒客户端线程 */
         }
     }
 
@@ -74,9 +74,9 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             channel.setAttribute(Constants.CHANNEL_ATTRIBUTE_READONLY_KEY, Boolean.TRUE);
         }
     }
-
+    /* 服务端收到请求 - 去掉请求报文头部，解析出 RpcInvocation，继续向上处理 */
     void handleRequest(final ExchangeChannel channel, Request req) throws RemotingException {
-        Response res = new Response(req.getId(), req.getVersion());
+        Response res = new Response(req.getId(), req.getVersion());/* 构建请求响应 */
         if (req.isBroken()) {
             Object data = req.getData();
 
@@ -95,19 +95,19 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             return;
         }
         // find handler by message class.
-        Object msg = req.getData();
+        Object msg = req.getData();/* RpcInvocation - 取出 请求内容 */
         try {
-            CompletionStage<Object> future = handler.reply(channel, msg);
-            future.whenComplete((appResult, t) -> {
+            CompletionStage<Object> future = handler.reply(channel, msg);/* DubboProtocol.requestHandler */
+            future.whenComplete((appResult, t) -> {  /* future <AppResponse>  ---  AppResponse [value=null, exception=java.lang.NullPointerException]     */
                 try {
                     if (t == null) {
                         res.setStatus(Response.OK);
-                        res.setResult(appResult);
+                        res.setResult(appResult);/* 设置服务端执行结果(异常) */
                     } else {
                         res.setStatus(Response.SERVICE_ERROR);
                         res.setErrorMessage(StringUtils.toString(t));
                     }
-                    channel.send(res);
+                    channel.send(res);/* 回写响应报文 */
                 } catch (RemotingException e) {
                     logger.warn("Send result to consumer failed, channel is " + channel + ", msg is " + e);
                 }
@@ -161,7 +161,7 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
             }
         }
     }
-
+    /* 处理数据总入口 ，异步处理器 AllChannelHandler调用 -----------------------------------------------------------------------------------------------------*/
     @Override
     public void received(Channel channel, Object message) throws RemotingException {
         final ExchangeChannel exchangeChannel = HeaderExchangeChannel.getOrAddChannel(channel);
@@ -172,13 +172,13 @@ public class HeaderExchangeHandler implements ChannelHandlerDelegate {
                 handlerEvent(channel, request);
             } else {
                 if (request.isTwoWay()) {
-                    handleRequest(exchangeChannel, request);
+                    handleRequest(exchangeChannel, request);/* 服务端 - 掉请求报文头部，解析出 RpcInvocation， 交给DubboProtocol.requestHandler  */
                 } else {
                     handler.received(exchangeChannel, request.getData());
                 }
             }
         } else if (message instanceof Response) {
-            handleResponse(channel, (Response) message);
+            handleResponse(channel, (Response) message);/* 客户端 - 收到响应 */
         } else if (message instanceof String) {
             if (isClientSide(channel)) {
                 Exception e = new Exception("Dubbo client can not supported string message: " + message + " in channel: " + channel + ", url: " + channel.getUrl());

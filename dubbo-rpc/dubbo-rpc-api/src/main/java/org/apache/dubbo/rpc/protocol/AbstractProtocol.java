@@ -45,7 +45,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.VERSION_KEY;
 public abstract class AbstractProtocol implements Protocol {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
+    /* 服务key -- 服务invoker */
     protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();
 
     /**
@@ -101,7 +101,7 @@ public abstract class AbstractProtocol implements Protocol {
 
     @Override
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-        return new AsyncToSyncInvoker<>(protocolBindingRefer(type, url));
+        return new AsyncToSyncInvoker<>(protocolBindingRefer(type, url));/* 将io异步 转 结果同步 -- AsyncToSyncInvoker -- DubboInvoker -->NettyClient */
     }
 
     protected abstract <T> Invoker<T> protocolBindingRefer(Class<T> type, URL url) throws RpcException;

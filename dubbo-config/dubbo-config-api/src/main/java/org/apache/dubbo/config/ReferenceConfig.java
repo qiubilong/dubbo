@@ -155,7 +155,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
             throw new IllegalStateException("The invoker of ReferenceConfig(" + url + ") has already destroyed!");
         }
         if (ref == null) {
-            init();
+            init();/* 生成 ReferenceBean 代理对象 */
         }
         return ref;
     }
@@ -190,7 +190,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
             bootstrap.init();
         }
 
-        checkAndUpdateSubConfigs();
+        checkAndUpdateSubConfigs();/* 更新配置 ---- JVM-D  > 配置中心-应用 > 配置中心-全局 >  注解  > dubbo文件配置 */
 
         checkStubAndLocal(interfaceClass);
         ConfigValidationUtils.checkMock(interfaceClass, this);
@@ -254,7 +254,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
         map.put(REGISTER_IP_KEY, hostToRegistry);
 
         serviceMetadata.getAttachments().putAll(map);
-
+        /* 生成 ReferenceBean 代理对象 */
         ref = createProxy(map);
 
         serviceMetadata.setTarget(ref);
@@ -298,7 +298,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
                 // if protocols not injvm checkRegistry
                 if (!LOCAL_PROTOCOL.equalsIgnoreCase(getProtocol())) {
                     checkRegistry();
-                    List<URL> us = ConfigValidationUtils.loadRegistries(this, false);
+                    List<URL> us = ConfigValidationUtils.loadRegistries(this, false);  /* 注册中心地址 */
                     if (CollectionUtils.isNotEmpty(us)) {
                         for (URL u : us) {
                             URL monitorUrl = ConfigValidationUtils.loadMonitor(this, u);
@@ -313,7 +313,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
                     }
                 }
             }
-
+            /* (包装类)ProtocolListenerWrapper -->（包装类）ProtocolFilterWrapper -->  RegistryProtocol.refer() -- > 生成客户端Invoker --MockClusterInvoker -->FailoverClusterInvoker  */
             if (urls.size() == 1) {
                 invoker = REF_PROTOCOL.refer(interfaceClass, urls.get(0));
             } else {
@@ -362,7 +362,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
             URL consumerURL = new URL(CONSUMER_PROTOCOL, map.remove(REGISTER_IP_KEY), 0, map.get(INTERFACE_KEY), map);
             metadataService.publishServiceDefinition(consumerURL);
         }
-        // create service proxy
+        /* InvokerInvocationHandler -- MockClusterInvoker -->FailoverClusterInvoker --服务目录 - DubboInvoker - NettyClient - HeaderExchangeHandler --异步请求 */
         return (T) PROXY_FACTORY.getProxy(invoker, ProtocolUtils.isGeneric(generic));
     }
 

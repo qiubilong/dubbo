@@ -41,7 +41,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
 
     private final URL url;
 
-    private final ChannelHandler handler;
+    private final ChannelHandler handler;/* AllChannelHandler  -- 异步 cache线程池  */
 
     public NettyClientHandler(URL url, ChannelHandler handler) {
         if (url == null) {
@@ -80,7 +80,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
-        handler.received(channel, msg);
+        handler.received(channel, msg);/* 客户端收到服务费响应 - AllChannelHandler */
     }
 
     @Override

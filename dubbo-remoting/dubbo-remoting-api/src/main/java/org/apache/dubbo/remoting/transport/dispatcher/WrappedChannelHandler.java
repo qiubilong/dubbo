@@ -35,7 +35,7 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
 
     protected static final Logger logger = LoggerFactory.getLogger(WrappedChannelHandler.class);
 
-    protected final ChannelHandler handler;
+    protected final ChannelHandler handler;/* HeaderExchangeHandler */
 
     protected final URL url;
 
@@ -107,14 +107,14 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
      * @return
      */
     public ExecutorService getPreferredExecutorService(Object msg) {
-        if (msg instanceof Response) {
+        if (msg instanceof Response) {/* 请求响应 */
             Response response = (Response) msg;
             DefaultFuture responseFuture = DefaultFuture.getFuture(response.getId());
             // a typical scenario is the response returned after timeout, the timeout response may has completed the future
             if (responseFuture == null) {
                 return getSharedExecutorService();
             } else {
-                ExecutorService executor = responseFuture.getExecutor();
+                ExecutorService executor = responseFuture.getExecutor(); /* 请求关联的 ThreadlessExecutor */
                 if (executor == null || executor.isShutdown()) {
                     executor = getSharedExecutorService();
                 }

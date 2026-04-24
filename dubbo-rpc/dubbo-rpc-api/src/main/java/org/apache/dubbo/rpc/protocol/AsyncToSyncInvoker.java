@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AsyncToSyncInvoker<T> implements Invoker<T> {
 
-    private Invoker<T> invoker;
+    private Invoker<T> invoker;/* DubboInvoker */
 
     public AsyncToSyncInvoker(Invoker<T> invoker) {
         this.invoker = invoker;
@@ -49,10 +49,10 @@ public class AsyncToSyncInvoker<T> implements Invoker<T> {
 
     @Override
     public Result invoke(Invocation invocation) throws RpcException {
-        Result asyncResult = invoker.invoke(invocation);
+        Result asyncResult = invoker.invoke(invocation);  /* DubboInvoker.AbstractInvoker */
 
         try {
-            if (InvokeMode.SYNC == ((RpcInvocation) invocation).getInvokeMode()) {
+            if (InvokeMode.SYNC == ((RpcInvocation) invocation).getInvokeMode()) { /* 同步 等待异步结果 */
                 /**
                  * NOTICE!
                  * must call {@link java.util.concurrent.CompletableFuture#get(long, TimeUnit)} because
