@@ -88,7 +88,7 @@ public class AppResponse implements Result { /* 业务  - 请求响应 */
             }
             throw exception; /* 重新抛出服务异常 */
         }
-        return result;
+        return result; /* 返回正常结果 */
     }
 
     @Override

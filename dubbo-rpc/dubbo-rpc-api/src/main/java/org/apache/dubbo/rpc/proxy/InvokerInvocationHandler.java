@@ -29,10 +29,10 @@ import java.lang.reflect.Method;
 
 /**
  * InvokerHandler
- */
+ */   /* @Reference引用服务 - 动态代理 - 底层出口 */
 public class InvokerInvocationHandler implements InvocationHandler {
     private static final Logger logger = LoggerFactory.getLogger(InvokerInvocationHandler.class);
-    private final Invoker<?> invoker;
+    private final Invoker<?> invoker;/* MockClusterInvoker */
     private ConsumerModel consumerModel;
 
     public InvokerInvocationHandler(Invoker<?> handler) {
@@ -65,12 +65,12 @@ public class InvokerInvocationHandler implements InvocationHandler {
         RpcInvocation rpcInvocation = new RpcInvocation(method, invoker.getInterface().getName(), args);
         String serviceKey = invoker.getUrl().getServiceKey();
         rpcInvocation.setTargetServiceUniqueName(serviceKey);
-      
+
         if (consumerModel != null) {
             rpcInvocation.put(Constants.CONSUMER_MODEL, consumerModel);
             rpcInvocation.put(Constants.METHOD_MODEL, consumerModel.getMethodModel(method));
         }
 
-        return invoker.invoke(rpcInvocation).recreate();
+        return invoker.invoke(rpcInvocation).recreate();/* MockClusterInvoker.invoke()  -->  AsyncRpcResult.recreate()抛出业务异常 */
     }
 }
