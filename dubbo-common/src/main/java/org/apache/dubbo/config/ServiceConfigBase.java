@@ -51,7 +51,7 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
     /**
      * The interface class of the exported service
      */
-    protected Class<?> interfaceClass;
+    protected Class<?> interfaceClass; /* 接口类 */
 
     /**
      * The reference of the interface implementation
@@ -66,7 +66,7 @@ public abstract class ServiceConfigBase<T> extends AbstractServiceConfig {
     /**
      * The provider configuration
      */
-    protected ProviderConfig provider;
+    protected ProviderConfig provider; // 服务全局配置
 
     /**
      * The providerIds

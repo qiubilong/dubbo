@@ -23,12 +23,12 @@ import java.util.Arrays;
 
 /**
  * The service provider default configuration
- *
+ * https://cn.dubbo.apache.org/zh-cn/overview/mannual/java-sdk/tasks/develop/api/
  * @export
  * @see org.apache.dubbo.config.ProtocolConfig
  * @see ServiceConfigBase
  */
-public class ProviderConfig extends AbstractServiceConfig {
+public class ProviderConfig extends AbstractServiceConfig { /* 作为多个ServiceConfig的默认值 */
 
     private static final long serialVersionUID = 6913423882496634749L;
 

@@ -274,7 +274,7 @@ public class ConfigManager extends LifecycleAdapter implements FrameworkExt {
     }
 
     public List<RegistryConfig> getDefaultRegistries() {
-        return getDefaultConfigs(getConfigsMap(getTagName(RegistryConfig.class)));
+        return getDefaultConfigs(getConfigsMap(getTagName(RegistryConfig.class))); /* 获取注册中心配置 */
     }
 
     public Collection<RegistryConfig> getRegistries() {
@@ -333,7 +333,7 @@ public class ConfigManager extends LifecycleAdapter implements FrameworkExt {
             return k.substring(0, k.indexOf("."));
         }).collect(Collectors.toSet());
     }
-
+    /*  覆盖的优先级，从大到小为  系统变量 > 配置中心-应用配置  > 配置中心-全局配置 > 注解或xml中定义 > dubbo.properties文件 */
     public void refreshAll() {
         write(() -> {
             // refresh all configs here,

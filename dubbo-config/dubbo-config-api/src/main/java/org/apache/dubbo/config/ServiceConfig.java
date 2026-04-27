@@ -101,7 +101,7 @@ import static org.apache.dubbo.rpc.Constants.SCOPE_REMOTE;
 import static org.apache.dubbo.rpc.Constants.TOKEN_KEY;
 import static org.apache.dubbo.rpc.cluster.Constants.EXPORT_KEY;
 
-public class ServiceConfig<T> extends ServiceConfigBase<T> {
+public class ServiceConfig<T> extends ServiceConfigBase<T> { /* 一个 ServiceConfig 实例代表一个 RPC 服务 */
 
     public static final Logger logger = LoggerFactory.getLogger(ServiceConfig.class);
 

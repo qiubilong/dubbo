@@ -506,7 +506,7 @@ public class DubboBootstrap extends GenericEventListener {
 
         ApplicationModel.initFrameworkExts();
 
-        startConfigCenter();
+        startConfigCenter();/* 尝试初始化配置 */
 
         useRegistryAsConfigCenterIfNecessary();
 
@@ -587,7 +587,7 @@ public class DubboBootstrap extends GenericEventListener {
         // check Config Center
         if (CollectionUtils.isEmpty(configCenters)) {
             ConfigCenterConfig configCenterConfig = new ConfigCenterConfig();
-            configCenterConfig.refresh();
+            configCenterConfig.refresh();// 尝试初始化配置
             if (configCenterConfig.isValid()) {
                 configManager.addConfigCenter(configCenterConfig);
                 configCenters = configManager.getConfigCenters();
@@ -606,7 +606,7 @@ public class DubboBootstrap extends GenericEventListener {
             }
             environment.setDynamicConfiguration(compositeDynamicConfiguration);
         }
-        configManager.refreshAll();
+        configManager.refreshAll();/* 尝试初始化配置 */
     }
 
     private void startMetadataReport() {

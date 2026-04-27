@@ -438,8 +438,8 @@ public class RegistryProtocol implements Protocol {/* 底层 - 注册协议Proto
     @Override
     @SuppressWarnings("unchecked")
     public <T> Invoker<T> refer(Class<T> type, URL url) throws RpcException {
-        url = getRegistryUrl(url);
-        Registry registry = registryFactory.getRegistry(url); /* 拿到注册中心实现，ZookeeperRegistry */
+        url = getRegistryUrl(url); /* nacos://127.0.0.1:8848/org.apache.dubbo.registry.RegistryService?application=dubbo-demo-annotation-provider&dubbo=2.0.2&pid=23592&refer=application%3Ddubbo-demo-annotation-provider%26dubbo%3D2.0.2%26group%3Dtest-xx%26init%3Dfalse%26interface%3Dorg.apache.dubbo.demo.DemoService%26methods%3DsayHello%2CsayHelloAsync%26mock%3Dfail%253A%2Breturn%2B123%26pid%3D23592%26register.ip%3D10.187.1.218%26retries%3D0%26revision%3D1.0.1%26side%3Dconsumer%26sticky%3Dfalse%26timeout%3D60000%26timestamp%3D1777277348031%26version%3D1.0.1&timestamp=1777279235881 */
+        Registry registry = registryFactory.getRegistry(url); /* 拿到注册中心实现，NacosRegistry */
         if (RegistryService.class.equals(type)) {
             return proxyFactory.getInvoker((T) registry, type, url);
         }
@@ -468,12 +468,12 @@ public class RegistryProtocol implements Protocol {/* 底层 - 注册协议Proto
         URL subscribeUrl = new URL(CONSUMER_PROTOCOL, parameters.remove(REGISTER_IP_KEY), 0, type.getName(), parameters);
         if (directory.isShouldRegister()) {
             directory.setRegisteredConsumerUrl(subscribeUrl);
-            registry.register(directory.getRegisteredConsumerUrl());
-        } /* 构造路由链，利用 zookeeper 加载&监听 路由规则 */
+            registry.register(directory.getRegisteredConsumerUrl());//注册消费者
+        } /* 构造路由链，利用 nacos 加载&监听 路由规则 */
         directory.buildRouterChain(subscribeUrl);/*  路由链 - (标签路由 --> 应用-条件路由 --> 接口服务-条件路由) */
-        directory.subscribe(toSubscribeUrl(subscribeUrl));/* ##### 利用 zookeeper拉取服务地址列表 --> 服务目录中生成 DubboInvoker --> 启动 NettyClient */
+        directory.subscribe(toSubscribeUrl(subscribeUrl));/* ##### 利用 nacos 拉取服务地址列表 --> 服务目录中生成 DubboInvoker --> 启动 NettyClient */
 
-        Invoker<T> invoker = cluster.join(directory);/* MockClusterWrapper（MockClusterInvoker） --> FailoverCluster（FailoverClusterInvoker） --> */
+        Invoker<T> invoker = cluster.join(directory);/* MockClusterWrapper（ MockClusterInvoker） --> FailoverCluster（FailoverClusterInvoker） --> */
         List<RegistryProtocolListener> listeners = findRegistryProtocolListeners(url);
         if (CollectionUtils.isEmpty(listeners)) {
             return invoker;

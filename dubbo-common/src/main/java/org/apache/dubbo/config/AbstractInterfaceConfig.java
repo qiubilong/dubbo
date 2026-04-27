@@ -178,7 +178,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
      * Check whether the registry config is exists, and then conversion it to {@link RegistryConfig}
      */
     public void checkRegistry() {
-        convertRegistryIdsToRegistries();
+        convertRegistryIdsToRegistries(); /* 获取注册中心配置 */
 
         for (RegistryConfig registryConfig : registries) {
             if (!registryConfig.isValid()) {
@@ -246,7 +246,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         verifyStubAndLocal(local, "Local", interfaceClass);
         verifyStubAndLocal(stub, "Stub", interfaceClass);
     }
-    
+
     public void verifyStubAndLocal(String className, String label, Class<?> interfaceClass){
     	if (ConfigUtils.isNotEmpty(className)) {
             Class<?> localClass = ConfigUtils.isDefault(className) ?
@@ -270,11 +270,11 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         }
     }
 
-    private void convertRegistryIdsToRegistries() {
+    private void convertRegistryIdsToRegistries() { /* 获取注册中心配置 */
         computeValidRegistryIds();
         if (StringUtils.isEmpty(registryIds)) {
             if (CollectionUtils.isEmpty(registries)) {
-                List<RegistryConfig> registryConfigs = ApplicationModel.getConfigManager().getDefaultRegistries();
+                List<RegistryConfig> registryConfigs = ApplicationModel.getConfigManager().getDefaultRegistries(); /* 全局注册中心  - nacos://127.0.0.1:8848  */
                 if (registryConfigs.isEmpty()) {
                     registryConfigs = new ArrayList<>();
                     RegistryConfig registryConfig = new RegistryConfig();
@@ -342,7 +342,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
             }
         }
     }
-    
+
     protected void computeValidRegistryIds() {
         if (StringUtils.isEmpty(getRegistryIds())) {
             if (getApplication() != null && StringUtils.isNotEmpty(getApplication().getRegistryIds())) {

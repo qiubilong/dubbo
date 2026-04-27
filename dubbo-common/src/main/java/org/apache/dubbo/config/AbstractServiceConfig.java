@@ -38,12 +38,12 @@ public abstract class AbstractServiceConfig extends AbstractInterfaceConfig {
     /**
      * The service version
      */
-    protected String version;
+    protected String version; /* 服务版本号 */
 
     /**
      * The service group
      */
-    protected String group;
+    protected String group; /* 服务分组 */
 
     /**
      * whether the service is deprecated

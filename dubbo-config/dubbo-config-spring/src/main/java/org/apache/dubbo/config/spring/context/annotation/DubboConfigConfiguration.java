@@ -54,9 +54,9 @@ public class DubboConfigConfiguration {
 
     /**
      * Single Dubbo {@link AbstractConfig Config} Bean Binding
-     */
+     */  /* 相当于--------------全局配置  */
     @EnableConfigurationBeanBindings({
-            @EnableConfigurationBeanBinding(prefix = "dubbo.application", type = ApplicationConfig.class),
+            @EnableConfigurationBeanBinding(prefix = "dubbo.application", type = ApplicationConfig.class),/* 导入配置类 - DubboConfigBindingRegistrar */
             @EnableConfigurationBeanBinding(prefix = "dubbo.module", type = ModuleConfig.class),
             @EnableConfigurationBeanBinding(prefix = "dubbo.registry", type = RegistryConfig.class),
             @EnableConfigurationBeanBinding(prefix = "dubbo.protocol", type = ProtocolConfig.class),

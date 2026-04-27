@@ -56,7 +56,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
 
         needReconnect = url.getParameter(Constants.SEND_RECONNECT_KEY, false);
 
-        initExecutor(url);
+        initExecutor(url); /* 创建消费者 默认 Cache线程池 */
 
         try {
             doOpen();
@@ -90,7 +90,7 @@ public abstract class AbstractClient extends AbstractEndpoint implements Client 
 
     private void initExecutor(URL url) {
         url = ExecutorUtil.setThreadName(url, CLIENT_THREAD_POOL_NAME);
-        url = url.addParameterIfAbsent(THREADPOOL_KEY, DEFAULT_CLIENT_THREADPOOL);
+        url = url.addParameterIfAbsent(THREADPOOL_KEY, DEFAULT_CLIENT_THREADPOOL); /* 消费端 默认 cached 线程池  */
         executor = executorRepository.createExecutorIfAbsent(url);
     }
 

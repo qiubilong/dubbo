@@ -456,17 +456,17 @@ public abstract class AbstractConfig implements Serializable {
 
     public void refresh() {
         Environment env = ApplicationModel.getEnvironment();
-        try {
+        try { /*  覆盖的优先级，从大到小为  系统变量 > 配置中心-应用配置  > 配置中心-全局配置 > 注解或xml中定义 > dubbo.properties文件 */
             CompositeConfiguration compositeConfiguration = env.getPrefixedConfiguration(this);
             // loop methods, get override value and set the new value back to method
             Method[] methods = getClass().getMethods();
             for (Method method : methods) {
                 if (MethodUtils.isSetter(method)) {
                     try {
-                        String value = StringUtils.trim(compositeConfiguration.getString(extractPropertyName(getClass(), method)));
+                        String value = StringUtils.trim(compositeConfiguration.getString(extractPropertyName(getClass(), method))); /* 查找配置 */
                         // isTypeMatch() is called to avoid duplicate and incorrect update, for example, we have two 'setGeneric' methods in ReferenceConfig.
                         if (StringUtils.isNotEmpty(value) && ClassUtils.isTypeMatch(method.getParameterTypes()[0], value)) {
-                            method.invoke(this, ClassUtils.convertPrimitive(method.getParameterTypes()[0], value));
+                            method.invoke(this, ClassUtils.convertPrimitive(method.getParameterTypes()[0], value)); /* 属性赋值 */
                         }
                     } catch (NoSuchMethodException e) {
                         logger.info("Failed to override the property " + method.getName() + " in " +

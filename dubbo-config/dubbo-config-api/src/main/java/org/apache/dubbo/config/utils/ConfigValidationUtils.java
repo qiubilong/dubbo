@@ -173,7 +173,7 @@ public class ConfigValidationUtils {
         List<RegistryConfig> registries = interfaceConfig.getRegistries();
         if (CollectionUtils.isNotEmpty(registries)) {
             for (RegistryConfig config : registries) {
-                String address = config.getAddress();
+                String address = config.getAddress(); /* nacos://127.0.0.1:8848 */
                 if (StringUtils.isEmpty(address)) {
                     address = ANYHOST_VALUE;
                 }

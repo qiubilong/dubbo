@@ -36,7 +36,7 @@ public class NacosRegistryFactory extends AbstractRegistryFactory {
     }
 
     @Override
-    protected Registry createRegistry(URL url) {
+    protected Registry createRegistry(URL url) { /* 创建nacos注册中心服务 */
         return new NacosRegistry(url, createNamingService(url));
     }
 }

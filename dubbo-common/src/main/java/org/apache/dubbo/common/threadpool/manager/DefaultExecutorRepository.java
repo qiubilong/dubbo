@@ -70,14 +70,14 @@ public class DefaultExecutorRepository implements ExecutorRepository {
      * @param url
      * @return
      */
-    public synchronized ExecutorService createExecutorIfAbsent(URL url) {
+    public synchronized ExecutorService createExecutorIfAbsent(URL url) { /* 初始化 dubbo线程池 */
         String componentKey = EXECUTOR_SERVICE_COMPONENT_KEY;
         if (CONSUMER_SIDE.equalsIgnoreCase(url.getParameter(SIDE_KEY))) {
             componentKey = CONSUMER_SIDE;
         }
         Map<Integer, ExecutorService> executors = data.computeIfAbsent(componentKey, k -> new ConcurrentHashMap<>());
         Integer portKey = url.getPort();
-        ExecutorService executor = executors.computeIfAbsent(portKey, k -> createExecutor(url));
+        ExecutorService executor = executors.computeIfAbsent(portKey, k -> createExecutor(url));/* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端 默认 CachedThreadPool */
         // If executor has been shut down, create a new one
         if (executor.isShutdown() || executor.isTerminated()) {
             executors.remove(portKey);
@@ -109,7 +109,7 @@ public class DefaultExecutorRepository implements ExecutorRepository {
         if (executor != null) {
             if (executor.isShutdown() || executor.isTerminated()) {
                 executors.remove(portKey);
-                executor = createExecutor(url); /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端(低版本)默认 CachedThreadPool ，新版本是fixed */
+                executor = createExecutor(url); /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端 默认 CachedThreadPool */
                 executors.put(portKey, executor);
             }
         }
@@ -159,7 +159,7 @@ public class DefaultExecutorRepository implements ExecutorRepository {
         return SHARED_EXECUTOR;
     }
 
-    private ExecutorService createExecutor(URL url) { /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端（低版本）默认 CachedThreadPool，新版本是fixed */
+    private ExecutorService createExecutor(URL url) { /* 服务默认 固定线程池 - FixedThreadPool -- 默认core=200，SynchronousQueue */         /* 客户端默认 CachedThreadPool */
         return (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);
     }
 

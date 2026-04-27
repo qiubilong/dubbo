@@ -52,7 +52,7 @@ import static org.apache.dubbo.config.Constants.TEST_ENVIRONMENT;
  *
  * @export
  */
-public class ApplicationConfig extends AbstractConfig {
+public class ApplicationConfig extends AbstractConfig { /* 应用全局配置 */
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
 
     private static final long serialVersionUID = 5508512956753757169L;
@@ -60,7 +60,7 @@ public class ApplicationConfig extends AbstractConfig {
     /**
      * Application name
      */
-    private String name;
+    private String name; /* 应用名 */
 
     /**
      * The application version

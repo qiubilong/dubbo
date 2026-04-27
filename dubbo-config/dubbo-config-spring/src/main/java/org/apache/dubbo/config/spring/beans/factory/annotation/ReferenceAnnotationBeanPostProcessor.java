@@ -92,7 +92,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
      * {@link DubboReference @DubboReference} has been supported since 2.7.7
      */
     public ReferenceAnnotationBeanPostProcessor() {
-        super(DubboReference.class, Reference.class, com.alibaba.dubbo.config.annotation.Reference.class);
+        super(DubboReference.class, Reference.class, com.alibaba.dubbo.config.annotation.Reference.class); /* 解析 @DubboReference */
     }
 
     /**
@@ -124,7 +124,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
     public Map<InjectionMetadata.InjectedElement, ReferenceBean<?>> getInjectedMethodReferenceBeanMap() {
         return Collections.unmodifiableMap(injectedMethodReferenceBeanCache);
     }
-    /* 生成 @Reference代理对象 ReferenceBean */
+    /* 生成 @DubboReference代理对象 ReferenceBean */
     @Override
     protected Object doGetInjectedBean(AnnotationAttributes attributes, Object bean, String beanName, Class<?> injectedType,
                                        InjectionMetadata.InjectedElement injectedElement) throws Exception {

@@ -75,7 +75,7 @@ import static org.apache.dubbo.registry.nacos.NacosServiceName.valueOf;
  * @see #LOOKUP_INTERVAL
  * @since 2.6.5
  */
-public class NacosRegistry extends FailbackRegistry {
+public class NacosRegistry extends FailbackRegistry { /* NacosRegistry注册中心 */
 
     /**
      * All supported categories
@@ -175,7 +175,7 @@ public class NacosRegistry extends FailbackRegistry {
 
     @Override
     public void doSubscribe(final URL url, final NotifyListener listener) {
-        Set<String> serviceNames = getServiceNames(url, listener);
+        Set<String> serviceNames = getServiceNames(url, listener); /* 获取服务名 providers:org.apache.dubbo.demo.DemoService:1.0.1:test-xx */
 
         //Set corresponding serviceNames for easy search later
         if (isServiceNamesWithCompatibleMode(url)) {
@@ -201,15 +201,15 @@ public class NacosRegistry extends FailbackRegistry {
                  *
                  * in https://github.com/apache/dubbo/issues/5978
                  */
-                for (String serviceName : serviceNames) {
-                    List<Instance> instances = namingService.getAllInstances(serviceName,
+                for (String serviceName : serviceNames) {/* 服务名 providers:org.apache.dubbo.demo.DemoService:1.0.1:test-xx */
+                    List<Instance> instances = namingService.getAllInstances(serviceName, /* 获取服务实例 */
                             getUrl().getParameter(GROUP_KEY, Constants.DEFAULT_GROUP));
                     NacosInstanceManageUtil.initOrRefreshServiceInstanceList(serviceName, instances);
                     allCorrespondingInstanceList.addAll(instances);
                 }
-                notifySubscriber(url, listener, allCorrespondingInstanceList);
+                notifySubscriber(url, listener, allCorrespondingInstanceList);/* 服务实例列表回调 - 创建dubooInvoker */
                 for (String serviceName : serviceNames) {
-                    subscribeEventListener(serviceName, url, listener);
+                    subscribeEventListener(serviceName, url, listener);/* 监听服务列表变化 */
                 }
             } else {
                 List<Instance> instances = new LinkedList<>();
@@ -507,7 +507,7 @@ public class NacosRegistry extends FailbackRegistry {
                 notifySubscriber(url, listener, instances);
             }
         };
-        namingService.subscribe(serviceName,
+        namingService.subscribe(serviceName, /* 监听服务列表变化 */
                 getUrl().getParameter(GROUP_KEY, Constants.DEFAULT_GROUP),
                 eventListener);
     }
@@ -526,7 +526,7 @@ public class NacosRegistry extends FailbackRegistry {
             filterHealthyInstances(healthyInstances);
         }
         List<URL> urls = toUrlWithEmpty(url, healthyInstances);
-        NacosRegistry.this.notify(url, listener, urls);
+        NacosRegistry.this.notify(url, listener, urls);/* 注册中心， 服务列表回调 */
     }
 
     /**

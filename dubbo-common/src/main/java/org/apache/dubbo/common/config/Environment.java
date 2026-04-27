@@ -111,19 +111,19 @@ public class Environment extends LifecycleAdapter implements FrameworkExt {
      *
      * @param config
      * @return
-     */
+     */  /*  覆盖的优先级，从大到小为  系统变量 > 配置中心-应用配置  > 配置中心-全局配置 > 注解或xml中定义 > dubbo.properties文件 */
     public synchronized CompositeConfiguration getPrefixedConfiguration(AbstractConfig config) {
         CompositeConfiguration prefixedConfiguration = new CompositeConfiguration(config.getPrefix(), config.getId());
         Configuration configuration = new ConfigConfigurationAdapter(config);
         if (this.isConfigCenterFirst()) {
             // The sequence would be: SystemConfiguration -> AppExternalConfiguration -> ExternalConfiguration -> AbstractConfig -> PropertiesConfiguration
             // Config center has the highest priority
-            prefixedConfiguration.addConfiguration(systemConfiguration);
-            prefixedConfiguration.addConfiguration(environmentConfiguration);
-            prefixedConfiguration.addConfiguration(appExternalConfiguration);
-            prefixedConfiguration.addConfiguration(externalConfiguration);
-            prefixedConfiguration.addConfiguration(configuration);
-            prefixedConfiguration.addConfiguration(propertiesConfiguration);
+            prefixedConfiguration.addConfiguration(systemConfiguration);     /* JVM 启动参数（-D） */
+            prefixedConfiguration.addConfiguration(environmentConfiguration);/* 操作系统环境变量 */
+            prefixedConfiguration.addConfiguration(appExternalConfiguration);/*  nacos应用级配置 - /dubbo/config/[您的应用名]/dubbo.properties */
+            prefixedConfiguration.addConfiguration(externalConfiguration);   /*  nacos全局级配置 - /dubbo/config/dubbo/dubbo.properties */
+            prefixedConfiguration.addConfiguration(configuration);           /* 注解、API硬编码 */
+            prefixedConfiguration.addConfiguration(propertiesConfiguration); /* application.properties */
         } else {
             // The sequence would be: SystemConfiguration -> AbstractConfig -> AppExternalConfiguration -> ExternalConfiguration -> PropertiesConfiguration
             // Config center has the highest priority

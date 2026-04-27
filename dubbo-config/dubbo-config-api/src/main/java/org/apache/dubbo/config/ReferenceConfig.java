@@ -202,7 +202,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
         if (!ProtocolUtils.isGeneric(generic)) {
             String revision = Version.getVersion(interfaceClass, version);
             if (revision != null && revision.length() > 0) {
-                map.put(REVISION_KEY, revision);
+                map.put(REVISION_KEY, revision); /* Service 版本号 */
             }
 
             String[] methods = Wrapper.getWrapper(interfaceClass).getMethodNames();
@@ -210,7 +210,7 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
                 logger.warn("No method found in service interface " + interfaceClass.getName());
                 map.put(METHODS_KEY, ANY_VALUE);
             } else {
-                map.put(METHODS_KEY, StringUtils.join(new HashSet<String>(Arrays.asList(methods)), COMMA_SEPARATOR));
+                map.put(METHODS_KEY, StringUtils.join(new HashSet<String>(Arrays.asList(methods)), COMMA_SEPARATOR));//Service 方法
             }
         }
         map.put(INTERFACE_KEY, interfaceName);
@@ -297,8 +297,8 @@ public class ReferenceConfig<T> extends ReferenceConfigBase<T> {
             } else { // assemble URL from register center's configuration
                 // if protocols not injvm checkRegistry
                 if (!LOCAL_PROTOCOL.equalsIgnoreCase(getProtocol())) {
-                    checkRegistry();
-                    List<URL> us = ConfigValidationUtils.loadRegistries(this, false);  /* 注册中心地址 */
+                    checkRegistry(); /* 获取注册中心配置 */
+                    List<URL> us = ConfigValidationUtils.loadRegistries(this, false);  /* 注册中心地址 - "registry://127.0.0.1:8848/org.apache.dubbo.registry.RegistryService?application=dubbo-demo-annotation-provider&dubbo=2.0.2&pid=23592&registry=nacos&timestamp=1777279235881" */
                     if (CollectionUtils.isNotEmpty(us)) {
                         for (URL u : us) {
                             URL monitorUrl = ConfigValidationUtils.loadMonitor(this, u);

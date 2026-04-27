@@ -106,7 +106,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     private final URL directoryUrl; // Initialization at construction time, assertion not null, and always assign non null value
     private final boolean multiGroup;
     private Protocol protocol; /* adaptive 类 */ // Initialization at the time of injection, the assertion is not null
-    private Registry registry; /* 注册中心 - ZookeeperRegistry */ // Initialization at the time of injection, the assertion is not null
+    private Registry registry; /* 注册中心 - NacosRegistry */ // Initialization at the time of injection, the assertion is not null
     private volatile boolean forbidden = false;
     private boolean shouldRegister;
     private boolean shouldSimplified;
@@ -226,7 +226,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     }
 
     @Override
-    public synchronized void notify(List<URL> urls) {/* 监听zookeeper 服务地址 --> 生成 DubboInvoker */
+    public synchronized void notify(List<URL> urls) {/* 监听nacos 服务地址 --> 生成 DubboInvoker */
         Map<String, List<URL>> categoryUrls = urls.stream()
                 .filter(Objects::nonNull)
                 .filter(this::isValidCategory)
@@ -239,7 +239,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         List<URL> routerURLs = categoryUrls.getOrDefault(ROUTERS_CATEGORY, Collections.emptyList());
         toRouters(routerURLs).ifPresent(this::addRouters);
 
-        // providers
+        // "dubbo://192.168.92.96:20880/org.apache.dubbo.demo.DemoService?anyhost=true&application=dubbo-demo-annotation-provider&category=providers&deprecated=false&dubbo=2.0.2&dynamic=true&generic=false&group=test-xx&interface=org.apache.dubbo.demo.DemoService&methods=sayHello,sayHelloAsync&path=org.apache.dubbo.demo.DemoService&pid=15268&protocol=dubbo&release=&revision=1.0.1&scope=remote&serialization=hessian2&side=provider&timestamp=1777276459731&version=1.0.1"
         List<URL> providerURLs = categoryUrls.getOrDefault(PROVIDERS_CATEGORY, Collections.emptyList());
         /**
          * 3.x added for extend URL address

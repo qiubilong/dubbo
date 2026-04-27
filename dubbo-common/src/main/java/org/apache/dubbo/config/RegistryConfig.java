@@ -32,7 +32,7 @@ import static org.apache.dubbo.config.Constants.REGISTRIES_SUFFIX;
  *
  * @export
  */
-public class RegistryConfig extends AbstractConfig {
+public class RegistryConfig extends AbstractConfig { /* 注册中心配置，多注册中心场景服务通过 id 关联 */
 
     public static final String NO_AVAILABLE = "N/A";
     private static final long serialVersionUID = 5508512956753757169L;
@@ -40,7 +40,7 @@ public class RegistryConfig extends AbstractConfig {
     /**
      * Register center address
      */
-    private String address;
+    private String address; /* nacos://127.0.0.1:8848 */
 
     /**
      * Username to login register center

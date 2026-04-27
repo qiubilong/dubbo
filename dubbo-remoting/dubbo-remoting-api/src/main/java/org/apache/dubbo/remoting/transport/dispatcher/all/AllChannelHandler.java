@@ -57,7 +57,7 @@ public class AllChannelHandler extends WrappedChannelHandler {
     /* 服务端、客户端收到报文 -- 线程池异步处理 */
     @Override
     public void received(Channel channel, Object message) throws RemotingException {
-        ExecutorService executor = getPreferredExecutorService(message); /* 服务端 - FixedThreadPool  、 客户端 - ThreadlessExecutor （ FixedThreadPool） */
+        ExecutorService executor = getPreferredExecutorService(message); /* 服务端 - FixedThreadPool  、 客户端 - ThreadlessExecutor （ CacheThreadPool） */
         try {
             executor.execute(new ChannelEventRunnable(channel, handler, ChannelState.RECEIVED, message)); /* 异步化，交给线程池去处理message */
         } catch (Throwable t) {

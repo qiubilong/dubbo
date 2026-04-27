@@ -119,7 +119,7 @@ public class NacosNamingServiceUtils {
         Properties nacosProperties = buildNacosProperties(connectionURL);
         NamingService namingService;
         try {
-            namingService = NacosFactory.createNamingService(nacosProperties);
+            namingService = NacosFactory.createNamingService(nacosProperties); /* 创建nacos服务 */
         } catch (NacosException e) {
             if (logger.isErrorEnabled()) {
                 logger.error(e.getErrMsg(), e);

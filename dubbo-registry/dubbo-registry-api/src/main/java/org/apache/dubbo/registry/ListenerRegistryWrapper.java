@@ -27,7 +27,7 @@ import java.util.List;
 public class ListenerRegistryWrapper implements Registry {
     private static final Logger logger = LoggerFactory.getLogger(ListenerRegistryWrapper.class);
 
-    private final Registry registry;
+    private final Registry registry; /* NacosRegistry */
     private final List<RegistryServiceListener> listeners;
 
 

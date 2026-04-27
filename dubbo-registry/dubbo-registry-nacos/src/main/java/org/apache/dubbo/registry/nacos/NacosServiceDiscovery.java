@@ -47,7 +47,7 @@ import static org.apache.dubbo.registry.nacos.util.NacosNamingServiceUtils.toIns
  * @see ServiceDiscovery
  * @since 2.7.5
  */
-public class NacosServiceDiscovery implements ServiceDiscovery {
+public class NacosServiceDiscovery implements ServiceDiscovery { /* 注册 consumer、provider 到 nacos */
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
