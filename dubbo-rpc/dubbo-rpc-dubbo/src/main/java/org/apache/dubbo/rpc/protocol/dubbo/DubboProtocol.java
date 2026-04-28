@@ -601,7 +601,7 @@ public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是�
 
     @Override
     public void destroy() {
-        for (String key : new ArrayList<>(serverMap.keySet())) {
+        for (String key : new ArrayList<>(serverMap.keySet())) { /* 关闭服务端 */
             ProtocolServer protocolServer = serverMap.remove(key);
 
             if (protocolServer == null) {
@@ -615,7 +615,7 @@ public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是�
                     logger.info("Close dubbo server: " + server.getLocalAddress());
                 }
 
-                server.close(ConfigurationUtils.getServerShutdownTimeout());
+                server.close(ConfigurationUtils.getServerShutdownTimeout());/* 服务端 关闭 - HeaderExchangeServer  默认10s超时 */
 
             } catch (Throwable t) {
                 logger.warn(t.getMessage(), t);
@@ -630,11 +630,11 @@ public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是�
             }
 
             for (ReferenceCountExchangeClient client : clients) {
-                closeReferenceCountExchangeClient(client);/* 关闭客户端连接 */
+                closeReferenceCountExchangeClient(client);/* 消费端 - 结束 未完成请求 DefaultFuture（消费端关闭） */
             }
         }
 
-        super.destroy();
+        super.destroy(); /* 销毁 Invoker */
     }
 
     /**
@@ -652,7 +652,7 @@ public class DubboProtocol extends AbstractProtocol {/* 底层Protocol - 不是�
                 logger.info("Close dubbo connect: " + client.getLocalAddress() + "-->" + client.getRemoteAddress());
             }
 
-            client.close(ConfigurationUtils.getServerShutdownTimeout()); /* 默认10s */
+            client.close(ConfigurationUtils.getServerShutdownTimeout()); /* 默认10s - 结束未完成请求DefaultFuture（消费端关闭）*/
 
             // TODO
             /*

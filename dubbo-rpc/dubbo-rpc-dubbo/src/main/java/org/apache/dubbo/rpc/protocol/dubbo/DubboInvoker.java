@@ -55,9 +55,9 @@ import static org.apache.dubbo.rpc.Constants.TOKEN_KEY;
 /**
  * DubboInvoker
  */
-public class DubboInvoker<T> extends AbstractInvoker<T> {
+public class DubboInvoker<T> extends AbstractInvoker<T> { /* 消费端 DubboInvoker */
 
-    private final ExchangeClient[] clients;
+    private final ExchangeClient[] clients; /* nettyClient 列表 */
 
     private final AtomicPositiveInteger index = new AtomicPositiveInteger();
 

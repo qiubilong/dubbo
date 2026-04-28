@@ -45,7 +45,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
 
     private static final String CHANNEL_KEY = HeaderExchangeChannel.class.getName() + ".CHANNEL";
 
-    private final Channel channel;
+    private final Channel channel; /* NettyClient */
 
     private volatile boolean closed = false;
 
@@ -149,7 +149,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
     public void close() {
         try {
             // graceful close
-            DefaultFuture.closeChannel(channel); /* 清除所有未完成的请求 */
+            DefaultFuture.closeChannel(channel); /* 结束所有未完成的请求 - DefaultFuture - 消费端关闭 */
             channel.close();
         } catch (Throwable e) {
             logger.warn(e.getMessage(), e);
@@ -166,7 +166,7 @@ final class HeaderExchangeChannel implements ExchangeChannel {
         if (timeout > 0) {
             long start = System.currentTimeMillis();
             while (DefaultFuture.hasFuture(channel)
-                    && System.currentTimeMillis() - start < timeout) {/* 默认等待 timeout=10s */
+                    && System.currentTimeMillis() - start < timeout) {/* 等待 DefaultFuture 结束，默认 timeout=10s */
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -174,12 +174,12 @@ final class HeaderExchangeChannel implements ExchangeChannel {
                 }
             }
         }
-        close();
+        close(); /* 清除所有未完成的请求 - DefaultFuture - 消费端关闭  */
     }
 
     @Override
     public void startClose() {
-        channel.startClose();
+        channel.startClose(); // NettyClient.startClose - 关闭标志
     }
 
     @Override

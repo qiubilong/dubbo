@@ -756,7 +756,7 @@ public class DubboBootstrap extends GenericEventListener {
                 registerServiceInstance();
             }
 
-            referServices();
+            referServices();//忽略，ReferenceBean在容器GetBean阶段初始化
             if (asyncExportingFutures.size() > 0) {
                 new Thread(() -> {
                     try {
@@ -1072,8 +1072,8 @@ public class DubboBootstrap extends GenericEventListener {
                     unexportServices();
                     unreferServices();
 
-                    destroyRegistries();
-                    DubboShutdownHook.destroyProtocols();
+                    destroyRegistries();//销毁注册中心连接
+                    DubboShutdownHook.destroyProtocols();//销毁所有协议实例（Dubbo、REST、HTTP 等），关闭对应的 Server 和 Client
                     destroyServiceDiscoveries();
 
                     clear();

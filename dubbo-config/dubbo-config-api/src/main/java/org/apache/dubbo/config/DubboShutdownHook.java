@@ -125,7 +125,7 @@ public class DubboShutdownHook extends Thread { /* Dubbo 优雅停机 */
 
     public static void destroyAll() {
         if (destroyed.compareAndSet(false, true)) {
-            AbstractRegistryFactory.destroyAll(); /* 注销注册中心 */
+            AbstractRegistryFactory.destroyAll(); /* 服务下线 */
             destroyProtocols();
         }
     }
@@ -139,7 +139,7 @@ public class DubboShutdownHook extends Thread { /* Dubbo 优雅停机 */
             try {
                 Protocol protocol = loader.getLoadedExtension(protocolName);
                 if (protocol != null) {
-                    protocol.destroy();
+                    protocol.destroy();/* 销毁 dubbo、registry */
                 }
             } catch (Throwable t) {
                 logger.warn(t.getMessage(), t);

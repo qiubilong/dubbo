@@ -108,7 +108,7 @@ public class HeaderExchangeServer implements ExchangeServer { /* 网络server抽
             if (getUrl().getParameter(Constants.CHANNEL_SEND_READONLYEVENT_KEY, true)) {
                 sendChannelReadOnlyEvent();
             }
-            while (HeaderExchangeServer.this.isRunning()
+            while (HeaderExchangeServer.this.isRunning() /* 还有 Chanel未关闭 */
                     && System.currentTimeMillis() - start < max) {
                 try {
                     Thread.sleep(10);

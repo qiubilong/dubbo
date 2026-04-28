@@ -138,7 +138,7 @@ public class DefaultFuture extends CompletableFuture<Object> {
      * @param channel channel to close
      */
     public static void closeChannel(Channel channel) {
-        for (Map.Entry<Long, Channel> entry : CHANNELS.entrySet()) {/* 清除所有未完成的请求 */
+        for (Map.Entry<Long, Channel> entry : CHANNELS.entrySet()) {/* 结束 - 所有未完成的请求 - DefaultFuture */
             if (channel.equals(entry.getValue())) {
                 DefaultFuture future = getFuture(entry.getKey());
                 if (future != null && !future.isDone()) {

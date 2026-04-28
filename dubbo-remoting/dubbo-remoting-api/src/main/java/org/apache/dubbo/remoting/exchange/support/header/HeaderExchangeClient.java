@@ -139,9 +139,9 @@ public class HeaderExchangeClient implements ExchangeClient {
     @Override
     public void close(int timeout) {
         // Mark the client into the closure process
-        startClose();
+        startClose(); /*  NettyClient 优雅停机关闭标志 */ // HeaderExchangeChannel.startClose();
         doClose();
-        channel.close(timeout);
+        channel.close(timeout); /* HeaderExchangeChannel - 等待客户端请求 DefaultFuture 结束 */
     }
 
     @Override
