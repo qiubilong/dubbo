@@ -101,7 +101,7 @@ public class ReferenceBean<T> extends ReferenceConfig<T> implements FactoryBean,
     public void afterPropertiesSet() throws Exception {
 
         // Initializes Dubbo's Config Beans before @Reference bean autowiring
-        prepareDubboConfigBeans();
+        prepareDubboConfigBeans(); /* 首先初始化 dubbo 配置类 */
 
         // lazy init by default.
         if (init == null) {

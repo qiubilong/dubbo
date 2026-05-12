@@ -130,13 +130,13 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
                                        InjectionMetadata.InjectedElement injectedElement) throws Exception {
         /**
          * The name of bean that annotated Dubbo's {@link Service @Service} in local Spring {@link ApplicationContext}
-         */
-        String referencedBeanName = buildReferencedBeanName(attributes, injectedType); /* 按ServiceBean的beanName生成规则来生成referencedBeanName， 规则为ServiceBean:interfaceClassName:version:group */
+         */ // 被引用服务名字
+        String referencedBeanName = buildReferencedBeanName(attributes, injectedType); /* 按ServiceBean的beanName生成规则来生成referencedBeanName， 规则为 ServiceBean:com.meiji.goods.mall.api.GoodsEsMallService:1.0:on */
 
         /**
          * The name of bean that is declared by {@link Reference @Reference} annotation injection
          */
-        String referenceBeanName = getReferenceBeanName(attributes, injectedType);/* 根据@Reference中ID  > @Reference注解的信息 + 接口名 生成referenceBeanName */
+        String referenceBeanName = getReferenceBeanName(attributes, injectedType);/* 根据@Reference中ID  > @Reference注解的信息 + 接口名 生成referenceBeanName - @Reference(check=false,group=on,timeout=6000,version=1.0) com.meiji.goods.mall.api.GoodsEsMallService */
         /* 生成 ReferenceBean 对象工厂 - FactoryBean */
         ReferenceBean referenceBean = buildReferenceBeanIfAbsent(referenceBeanName, attributes, injectedType);
 
