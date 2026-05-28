@@ -28,5 +28,5 @@
     <description>The demo module of dubbo project</description>
     <properties>
         <skip_maven_deploy>true</skip_maven_deploy>
-    </properties>
+    </properties><dependencies><dependency><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>1.18.42</version><scope>provided</scope></dependency></dependencies>
 </project>

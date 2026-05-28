@@ -130,7 +130,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
                                        InjectionMetadata.InjectedElement injectedElement) throws Exception {
         /**
          * The name of bean that annotated Dubbo's {@link Service @Service} in local Spring {@link ApplicationContext}
-         */ // 被引用服务名字
+         */ // 被引用服务名字，用于判断是使用本机还是远程服务
         String referencedBeanName = buildReferencedBeanName(attributes, injectedType); /* 按ServiceBean的beanName生成规则来生成referencedBeanName， 规则为 ServiceBean:com.meiji.goods.mall.api.GoodsEsMallService:1.0:on */
 
         /**
@@ -346,7 +346,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
             this.bean = serviceBean.getRef();
         }
     }
-
+    /* 缓存没用，应该使用对象属性 - ServiceBean:com.meiji.user.all.api.api.UserService:1.0:on#source=private com.meiji.user.all.api.api.UserService com.meiji.order.message.OrderCommonMessageSender.userService#attributes={check=false, group=on, retries=0, timeout=2000, version=1.0} */
     @Override
     protected String buildInjectedObjectCacheKey(AnnotationAttributes attributes, Object bean, String beanName,
                                                  Class<?> injectedType, InjectionMetadata.InjectedElement injectedElement) {
@@ -368,7 +368,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
     private ReferenceBean buildReferenceBeanIfAbsent(String referenceBeanName, AnnotationAttributes attributes,
                                                      Class<?> referencedType)
             throws Exception {
-
+        /* 可以缓存ReferenceBean  referenceBeanName = @Reference(check=false,group=on,retries=0,timeout=2000,version=1.0) com.meiji.user.all.api.api.UserService */
         ReferenceBean<?> referenceBean = referenceBeanCache.get(referenceBeanName);
 
         if (referenceBean == null) {

@@ -18,6 +18,8 @@ package org.apache.dubbo.demo.provider;
 
 import org.apache.dubbo.config.annotation.Service;
 import org.apache.dubbo.demo.DemoService;
+import org.apache.dubbo.demo.v2.OrderQuery;
+import org.apache.dubbo.demo.v2.OrderQueryResp;
 import org.apache.dubbo.rpc.RpcContext;
 
 import org.apache.dubbo.rpc.RpcException;
@@ -30,6 +32,11 @@ import java.util.concurrent.CompletableFuture;
 @Service(version = "1.0.1", group = "test-xx",parameters = {"scope","remote"})
 public class DemoServiceImpl implements DemoService {
     private static final Logger logger = LoggerFactory.getLogger(DemoServiceImpl.class);
+
+    @Override
+    public OrderQueryResp queryOrder(OrderQuery query) {
+        return new OrderQueryResp(query.getOrderCode());
+    }
 
     @Override
     public String sayHello(String name) {

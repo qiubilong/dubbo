@@ -17,11 +17,13 @@
 package org.apache.dubbo.demo.consumer;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.apache.dubbo.demo.DemoService;
 import org.apache.dubbo.demo.consumer.comp.DemoServiceComponent;
 
+import org.apache.dubbo.demo.v2.OrderQuery;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -32,21 +34,34 @@ public class ApplicationCunsumer {
      * In order to make sure multicast registry works, need to specify '-Djava.net.preferIPv4Stack=true' before
      * launch the application
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConsumerConfiguration.class);
         context.start();
-        DemoService service = context.getBean("demoServiceComponent", DemoServiceComponent.class);
-        System.out.println("开始调用");
 
-        System.out.println("result1 :" + service.sayHello("test"));
+        while (true){
+            DemoServiceComponent service = context.getBean("demoServiceComponent", DemoServiceComponent.class);
+            System.out.println("开始调用");
+
+            try {
+                OrderQuery query = new OrderQuery();
+                query.setOrderCode(UUID.randomUUID().toString());
+                System.out.println("result1 :" + service.queryOrder(query).getOrderCode());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
+            Thread.sleep(5000);
+        }
+
 
 
         // System.out.println("result1 :" + service.sayHello("Rpc"));
-        System.out.println("result1 :" + service.sayHello("User"));//业务异常
-        System.out.println("result1 :" + service.sayHello("test"));
+        //System.out.println("result1 :" + service.sayHello("User"));//业务异常
+        //System.out.println("result1 :" + service.sayHello("test"));
 
 
-        System.in.read();
+        //System.in.read();
     }
 
     @Configuration

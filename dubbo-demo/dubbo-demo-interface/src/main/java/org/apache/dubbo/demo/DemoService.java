@@ -18,7 +18,13 @@ package org.apache.dubbo.demo;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.dubbo.demo.v2.OrderQuery;
+import org.apache.dubbo.demo.v2.OrderQueryResp;
+
+
 public interface DemoService {
+
+    OrderQueryResp queryOrder(OrderQuery query);
 
     String sayHello(String name);
 

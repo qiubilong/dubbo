@@ -19,21 +19,25 @@ package org.apache.dubbo.demo.consumer.comp;
 import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.demo.DemoService;
 
+import org.apache.dubbo.demo.v2.OrderQuery;
+import org.apache.dubbo.demo.v2.OrderQueryResp;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
 @Component("demoServiceComponent")
-public class DemoServiceComponent implements DemoService {
+public class DemoServiceComponent  {
     @Reference(version = "1.0.1", group = "test-xx", mock = "fail: return 123",timeout = 1000 * 60,retries = 0) //内部rpc异常
     private DemoService demoService;
 
-    @Override
+    public OrderQueryResp queryOrder(OrderQuery query) {
+        return demoService.queryOrder(query);
+    }
+
     public String sayHello(String name) {
         return demoService.sayHello(name);
     }
 
-    @Override
     public CompletableFuture<String> sayHelloAsync(String name) {
         return null;
     }
