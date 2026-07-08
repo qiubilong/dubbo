@@ -19,12 +19,15 @@ package org.apache.dubbo.demo.consumer;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.apache.dubbo.config.spring.beans.factory.annotation.LazyReferenceAnnotationBeanPostProcessor;
+import org.apache.dubbo.config.spring.beans.factory.annotation.ReferenceAnnotationBeanPostProcessor;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.apache.dubbo.demo.DemoService;
 import org.apache.dubbo.demo.consumer.comp.DemoServiceComponent;
 
 import org.apache.dubbo.demo.v2.OrderQuery;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -37,7 +40,7 @@ public class ApplicationCunsumer {
     public static void main(String[] args) throws Exception {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConsumerConfiguration.class);
         context.start();
-
+        Thread.sleep(5000);
         while (true){
             DemoServiceComponent service = context.getBean("demoServiceComponent", DemoServiceComponent.class);
             System.out.println("开始调用");
@@ -70,5 +73,9 @@ public class ApplicationCunsumer {
     @ComponentScan(value = {"org.apache.dubbo.demo.consumer.comp"})
     static class ConsumerConfiguration {
 
+        @Bean(name = ReferenceAnnotationBeanPostProcessor.BEAN_NAME)
+        public LazyReferenceAnnotationBeanPostProcessor lazyReferenceAnnotationBeanPostProcessor() {
+            return new LazyReferenceAnnotationBeanPostProcessor();
+        }
     }
 }

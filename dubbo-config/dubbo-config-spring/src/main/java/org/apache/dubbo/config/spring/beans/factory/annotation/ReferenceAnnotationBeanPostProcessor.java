@@ -130,7 +130,7 @@ public class ReferenceAnnotationBeanPostProcessor extends AbstractAnnotationBean
                                        InjectionMetadata.InjectedElement injectedElement) throws Exception {
         /**
          * The name of bean that annotated Dubbo's {@link Service @Service} in local Spring {@link ApplicationContext}
-         */ // 被引用服务名字，用于判断是使用本机还是远程服务
+         */    /* 被引用服务名字，用于判断是使用本机还是远程服务 */
         String referencedBeanName = buildReferencedBeanName(attributes, injectedType); /* 按ServiceBean的beanName生成规则来生成referencedBeanName， 规则为 ServiceBean:com.meiji.goods.mall.api.GoodsEsMallService:1.0:on */
 
         /**

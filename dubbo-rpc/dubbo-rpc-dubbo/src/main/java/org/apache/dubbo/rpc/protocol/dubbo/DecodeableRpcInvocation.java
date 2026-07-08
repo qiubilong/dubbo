@@ -121,9 +121,9 @@ public class DecodeableRpcInvocation extends RpcInvocation implements Codec, Dec
 //                    pts = ReflectUtils.desc2classArray(desc);
 //                } else {
                 ServiceRepository repository = ApplicationModel.getServiceRepository();
-                ServiceDescriptor serviceDescriptor = repository.lookupService(path);
+                ServiceDescriptor serviceDescriptor = repository.lookupService(path);/* 根据 api路径查找 服务类 */
                 if (serviceDescriptor != null) {
-                    MethodDescriptor methodDescriptor = serviceDescriptor.getMethod(getMethodName(), desc);
+                    MethodDescriptor methodDescriptor = serviceDescriptor.getMethod(getMethodName(), desc); /* 校验方法参数类型 */
                     if (methodDescriptor != null) {
                         pts = methodDescriptor.getParameterClasses();
                         this.setReturnTypes(methodDescriptor.getReturnTypes());

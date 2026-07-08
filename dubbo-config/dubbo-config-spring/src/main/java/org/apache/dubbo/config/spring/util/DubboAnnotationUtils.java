@@ -92,11 +92,11 @@ public class DubboAnnotationUtils {
 
         ClassLoader classLoader = defaultInterfaceClass != null ? defaultInterfaceClass.getClassLoader() : Thread.currentThread().getContextClassLoader();
 
-        Class<?> interfaceClass = getAttribute(attributes, "interfaceClass");
+        Class<?> interfaceClass = getAttribute(attributes, "interfaceClass"); /* 注解中指定了 接口类 */
 
         if (void.class.equals(interfaceClass)) { // default or set void.class for purpose.
 
-            interfaceClass = null;
+            interfaceClass = null;/* 默认值 */
 
             String interfaceClassName = getAttribute(attributes, "interfaceName");
 
@@ -114,7 +114,7 @@ public class DubboAnnotationUtils {
             Class<?>[] allInterfaces = getAllInterfacesForClass(defaultInterfaceClass);
 
             if (allInterfaces.length > 0) {
-                interfaceClass = allInterfaces[0];
+                interfaceClass = allInterfaces[0];/* 取第一个接口 作为dubbo服务  */
             }
 
         }
